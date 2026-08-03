@@ -1,0 +1,32 @@
+@startuml ContainerDiagram
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+
+Person(customer, "Customer")
+Person(admin, "Store Admin / Manager")
+
+System_Boundary(c1, "Smart Web Ordering System") {
+    Container(customerApp, "Customer Web App", "React / Next.js", "Web interface for browsing, custom cake designing, ordering, and chat.")
+    Container(adminApp, "Admin & POS Portal", "React / Next.js", "Dashboard for inventory, POS management, order production tracking, and analytics.")
+    
+    Container(backendApi, "Backend API", "Nest.js / Node.js", "Handles business logic, AI integrations, POS, and order processing.")
+    
+    ContainerDb(database, "Database", "PostgreSQL (Supabase)", "Stores users, products, orders, inventory logs, and design metadata.")
+    Container(storage, "Object Storage", "Supabase Storage", "Stores uploaded and AI-generated custom cake images.")
+}
+
+System_Ext(paymentGateway, "Payment Gateway", "e.g., GCash, Maya")
+System_Ext(openai, "OpenAI API", "DALL-E & Chatbot Engine")
+
+Rel(customer, customerApp, "Uses", "HTTPS")
+Rel(admin, adminApp, "Uses", "HTTPS")
+
+Rel(customerApp, backendApi, "Makes API calls", "HTTPS / WebSocket")
+Rel(adminApp, backendApi, "Makes API calls", "HTTPS / WebSocket")
+
+Rel(backendApi, database, "Reads/Writes", "SQL / Prisma ORM")
+Rel(backendApi, storage, "Uploads/Retrieves files", "HTTPS")
+
+Rel(backendApi, paymentGateway, "Processes payments", "HTTPS / REST API")
+Rel(backendApi, openai, "Generates cake prompts & chats", "HTTPS / REST API")
+
+@enduml
