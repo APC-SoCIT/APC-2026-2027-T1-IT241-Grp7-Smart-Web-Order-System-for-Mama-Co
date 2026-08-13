@@ -2,35 +2,20 @@
 
 !include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Context.puml 
 
- 
-
-' Title and Configuration 
 
 title Data Flow Context Diagram: Smart Web Ordering System 
 
- 
-
-' External Entities / Users (Dark Blue Blocks) 
 
 Person(Customer, "Customer") 
 
 Person(StaffAdmin, "Staff / Admin") 
 
- 
-
-' Central System (Main Blue Box) 
 
 System(System, "Smart Web Ordering System", "Centralized platform for ordering, custom cake generation, and store management.") 
 
- 
-
-' External System (Gray Box) 
 
 System_Ext(AISystem, "AI System", "Generative AI cake design tool and NLP chatbot services.") 
 
- 
-
-' Data Flows: Customer <--> System 
 
 Rel(Customer, System, "registration / account info", "HTTPS") 
 
@@ -50,9 +35,6 @@ Rel(System, Customer, "visual cake preview", "HTTPS")
 
 Rel(System, Customer, "order confirmation", "HTTPS") 
 
- 
-
-' Data Flows: Staff / Admin <--> System 
 
 Rel(StaffAdmin, System, "product inventory updates", "HTTPS") 
 
@@ -66,9 +48,6 @@ Rel(System, StaffAdmin, "consolidated orders (FB, FoodPanda, Grab)", "HTTPS")
 
 Rel(System, StaffAdmin, "business analytics / reports", "HTTPS") 
 
- 
-
-' Data Flows: System <--> AI System 
 
 Rel(System, AISystem, "customer query text (NLP)", "HTTPS/REST") 
 
