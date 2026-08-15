@@ -2,10 +2,10 @@
 !include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
 
 Person(customer, "Customer")
-Person(admin, "Store Admin / Manager")
+Person(admin, "Staff / Admin")
 
 System_Boundary(c1, "Smart Web Ordering System") {
-    Container(customerApp, "Customer Web App", "React / Next.js", "Web interface for browsing, custom cake designing, ordering, and chat.")
+    Container(customerApp, "Website Application", "React / Next.js", "Web interface for browsing, custom cake designing, ordering, and chat.")
     Container(adminApp, "Admin & POS Portal", "React / Next.js", "Dashboard for inventory, POS management, order production tracking, and analytics.")
     
     Container(backendApi, "Backend API", "Nest.js / Node.js", "Handles business logic, AI integrations, POS, and order processing.")
