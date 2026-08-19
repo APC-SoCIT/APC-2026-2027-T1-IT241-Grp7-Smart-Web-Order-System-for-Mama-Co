@@ -25,19 +25,19 @@ Container_Boundary(api, "Backend API (Nest.js)") {
     Component(orm, "Database Access Layer", "Prisma / Supabase Client", "Abstracts SQL queries to PostgreSQL database.")
 }
 
-Rel(customerApp, authCtrl, "POST /auth/login")
-Rel(customerApp, orderCtrl, "POST /orders")
-Rel(customerApp, aiCtrl, "POST /ai/generate-cake")
-Rel(customerApp, chatCtrl, "POST /chat")
+Rel(customerApp, authCtrl,"POST /auth/login")
+Rel(customerApp, orderCtrl,"POST /orders")
+Rel(customerApp, aiCtrl,"POST /ai/generate-cake")
+Rel(customerApp, chatCtrl,"POST /chat")
 
-Rel(adminApp, orderCtrl, "GET /orders, PATCH /orders/:id")
-Rel(adminApp, invCtrl, "GET/POST /inventory")
+Rel(adminApp, orderCtrl,"GET /orders, PATCH /orders/:id")
+Rel(adminApp, invCtrl,"GET/POST /inventory")
 
-Rel(authCtrl, authSvc, "Uses")
-Rel(orderCtrl, orderSvc, "Uses")
-Rel(aiCtrl, aiSvc, "Uses")
-Rel(chatCtrl, chatSvc, "Uses")
-Rel(invCtrl, invSvc, "Uses")
+Rel(authCtrl, authSvc,"Uses")
+Rel(orderCtrl, orderSvc,"Uses")
+Rel(aiCtrl, aiSvc,"Uses")
+Rel(chatCtrl, chatSvc,"Uses")
+Rel(invCtrl, invSvc,"Uses")
 
 Rel(orderSvc, invSvc, "Triggers stock deduct")
 Rel(aiSvc, openai, "Generates Image via DALL-E", "HTTPS")
