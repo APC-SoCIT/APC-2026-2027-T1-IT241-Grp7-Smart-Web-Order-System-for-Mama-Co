@@ -4,9 +4,11 @@ entity "USERS" as users {
   --
   full_name : VARCHAR(100)
   email : VARCHAR(100)
+  password_hash : VARCHAR(255)
   phone_number : VARCHAR(20)
   role : VARCHAR(20)
   created_at : TIMESTAMP
+  updated_at : TIMESTAMP
 }
 
 entity "ORDERS" as orders {
@@ -16,7 +18,11 @@ entity "ORDERS" as orders {
   order_status : VARCHAR(30)
   order_type : VARCHAR(20)
   total_amount : DECIMAL(10,2)
+  shipping_address : TEXT
+  customer_contact_number : VARCHAR(20)
+  delivery_notes : TEXT
   created_at : TIMESTAMP
+  updated_at : TIMESTAMP
 }
 
 entity "ORDER_ITEMS" as order_items {
@@ -35,6 +41,12 @@ entity "CAKE_CUSTOM_DESIGNS" as custom_designs {
   * user_id : UUID <<FK>>
   prompt_text : TEXT
   generated_image_url : TEXT
+  status : VARCHAR(30)
+  estimated_price : DECIMAL(10,2)
+  cake_size : VARCHAR(50)
+  tier_count : INT
+  flavor : VARCHAR(50)
+  frosting : VARCHAR(50)
   created_at : TIMESTAMP
 }
 
@@ -42,9 +54,12 @@ entity "PRODUCTS" as products {
   * product_id : UUID <<PK>>
   --
   name : VARCHAR(100)
+  description : TEXT
   category : VARCHAR(50)
   base_price : DECIMAL(10,2)
+  image_url : TEXT
   is_available : BOOLEAN
+  updated_at : TIMESTAMP
 }
 
 entity "PRODUCT_INGREDIENTS" as product_ingredients {
@@ -61,6 +76,8 @@ entity "INVENTORY" as inventory {
   current_stock : DECIMAL(10,2)
   unit_of_measure : VARCHAR(20)
   reorder_level : DECIMAL(10,2)
+  unit_cost : DECIMAL(10,2)
+  updated_at : TIMESTAMP
 }
 
 entity "INVENTORY_LOG" as inventory_log {
@@ -79,6 +96,9 @@ entity "PAYMENTS" as payments {
   provider : VARCHAR(30)
   status : VARCHAR(20)
   transaction_id : VARCHAR(100)
+  amount : DECIMAL(10,2)
+  proof_of_payment_url : TEXT
+  created_at : TIMESTAMP
 }
 
 users ||--o{ orders : "places"
@@ -92,5 +112,4 @@ products ||--|{ product_ingredients : "requires"
 inventory ||--|{ product_ingredients : "used by"
 inventory ||--o{ inventory_log : "tracked by"
 
-@endl
-
+@enduml
