@@ -2,31 +2,30 @@
 !include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
 
 Person(customer, "Customer")
-Person(admin, "Staff / Admin")
+Person(staff, "Staff")
+Person(admin, "Admin")
 
-System_Boundary(c1, "Smart Web Ordering System") {
-    Container(customerApp, "Website Application", "React / Next.js", "Web interface for browsing, custom cake designing, ordering, and chat.")
-    Container(adminApp, "Admin & POS Portal", "React / Next.js", "Dashboard for inventory, POS management, order production tracking, and analytics.")
-    
-    Container(backendApi, "Backend API", "Nest.js / Node.js", "Handles business logic, AI integrations, POS, and order processing.")
-    
-    ContainerDb(database, "Database", "PostgreSQL (Supabase)", "Stores users, products, orders, inventory logs, and design metadata.")
-    Container(storage, "Object Storage", "Supabase Storage", "Stores uploaded and AI-generated custom cake images.")
+System_Boundary(c1, "Fatmama Pastry Shop System") {
+    Container(customerApp, "Customer Web App", "React.js", "Allows customers to browse products, request custom cake designs, place orders, and send inquiries.")
+    Container(staffPortal, "Staff Portal", "React.js", "Allows staff to manage orders, product listings, inquiries, and inventory visibility.")
+    Container(adminPortal, "Admin Portal", "React.js", "Allows administrators to manage customers, staff, inventory, products, and sales.")
+    Container(apiApp, "Backend API Application", "Nest.js / Supabase", "Provides API endpoints for user authentication, order processing, AI prompt handling, and inventory management.")
+    ContainerDb(logicalDb, "Logical Data Store", "Relational ERD Schema", "Represents USERS, CUSTOMERS, ADDRESSES, PRODUCTS, PRODUCT_CATEGORIES, ORDERS, ORDER_ITEMS, INVENTORY_ITEMS, and INVENTORY_LOGS.")
 }
 
-System_Ext(paymentGateway, "Payment Gateway", "e.g., GCash, Maya")
-System_Ext(openai, "OpenAI API", "DALL-E & Chatbot Engine")
+System_Ext(aiDesign, "AI Design Service", "OpenAI API")
+System_Ext(paymentGateway, "Payment Gateway", "GCash / Maya")
 
-Rel(customer, customerApp, "Uses", "HTTPS")
-Rel(admin, adminApp, "Uses", "HTTPS")
+Rel(customer, customerApp, "Browses products and places orders", "HTTPS")
+Rel(staff, staffPortal, "Handles orders and inquiries", "HTTPS")
+Rel(admin, adminPortal, "Manages inventory and staff", "HTTPS")
 
-Rel(customerApp, backendApi, "Makes API calls", "HTTPS / WebSocket")
-Rel(adminApp, backendApi, "Makes API calls", "HTTPS / WebSocket")
+Rel(customerApp, apiApp, "Uses API", "HTTPS / REST")
+Rel(staffPortal, apiApp, "Uses API", "HTTPS / REST")
+Rel(adminPortal, apiApp, "Uses API", "HTTPS / REST")
 
-Rel(backendApi, database, "Reads/Writes", "SQL / Prisma ORM")
-Rel(backendApi, storage, "Uploads/Retrieves files", "HTTPS")
-
-Rel(backendApi, paymentGateway, "Processes payments", "HTTPS / REST API")
-Rel(backendApi, openai, "Generates cake prompts & chats", "HTTPS / REST API")
+Rel(apiApp, logicalDb, "Reads and writes data", "SQL / TCP")
+Rel(apiApp, aiDesign, "Generates cake prompts securely", "HTTPS / REST")
+Rel(apiApp, paymentGateway, "Verifies payments and updates order status", "HTTPS / REST")
 
 @enduml
