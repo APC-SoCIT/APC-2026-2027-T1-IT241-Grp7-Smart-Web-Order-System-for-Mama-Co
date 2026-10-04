@@ -1,62 +1,49 @@
-@startuml C4_DataFlows 
+@startuml
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Context.puml
 
-!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Context.puml 
+SHOW_PERSON_OUTLINE()
+LAYOUT_WITH_LEGEND()
 
+title Detailed System Context Diagram - Smart Web Ordering System
 
-title Data Flow Context Diagram: Smart Web Ordering System 
+' Actors
+Person(customer, "Customer", "Browses catalog, customizes cakes via AI, manages account, and places online orders.")
+Person(staff, "Staff", "Processes orders, responds to complex inquiries, and updates product inventory.")
+Person(admin, "Admin", "Manages user accounts, configures system settings, and reviews business analytics.")
 
+' Primary Boundary
+System(ordering_system, "Smart Web Ordering System", "Centralized platform managing user accounts, order processing, POS synchronization, and catalog management.")
 
-Person(Customer, "Customer") 
+' External Systems
+System_Ext(ai_system, "AI System", "External NLP chatbot and Generative AI engine for cake design preview generation.")
 
-Person(StaffAdmin, "Staff / Admin") 
+' Customer
+Rel(customer, ordering_system, "Sends registration and login credentials", "HTTPS")
+Rel(ordering_system, customer, "Returns authentication status and user profile", "HTTPS")
 
+Rel(customer, ordering_system, "Submits product inquiries and chatbot prompts", "HTTPS")
+Rel(ordering_system, customer, "Displays product details and AI chatbot responses", "HTTPS")
 
-System(System, "Smart Web Ordering System", "Centralized platform for ordering, custom cake generation, and store management.") 
+Rel(customer, ordering_system, "Submits custom cake design preferences", "HTTPS")
+Rel(ordering_system, customer, "Renders visual cake preview and pricing", "HTTPS")
 
+Rel(customer, ordering_system, "Submits order details and payment info", "HTTPS")
+Rel(ordering_system, customer, "Sends order confirmation and receipt", "HTTPS")
 
-System_Ext(AISystem, "AI System", "Generative AI cake design tool and NLP chatbot services.") 
+' Staff
+Rel(staff, ordering_system, "Updates product inventory and catalog items", "HTTPS")
+Rel(ordering_system, staff, "Provides pending order notifications and inquiry queue", "HTTPS")
+Rel(staff, ordering_system, "Submits inquiry responses and updates order fulfillment status", "HTTPS")
 
+' Admin
+Rel(admin, ordering_system, "Manages user permissions, staff roles, and system settings", "HTTPS")
+Rel(ordering_system, admin, "Generates sales analytics, revenue reports, and inventory logs", "HTTPS")
 
-Rel(Customer, System, "registration / account info", "HTTPS") 
+' AI System
+Rel(ordering_system, ai_system, "Forwards customer prompt text for NLP processing", "REST API / HTTPS")
+Rel(ai_system, ordering_system, "Returns structured chatbot response text", "REST API / HTTPS")
 
-Rel(Customer, System, "product inquiry / prompt", "HTTPS") 
-
-Rel(Customer, System, "cake design preferences", "HTTPS") 
-
-Rel(Customer, System, "order details", "HTTPS") 
-
- 
-
-Rel(System, Customer, "account status", "HTTPS") 
-
-Rel(System, Customer, "inquiry response / confirmation", "HTTPS") 
-
-Rel(System, Customer, "visual cake preview", "HTTPS") 
-
-Rel(System, Customer, "order confirmation", "HTTPS") 
-
-
-Rel(StaffAdmin, System, "product inventory updates", "HTTPS") 
-
-Rel(StaffAdmin, System, "complex inquiry responses", "HTTPS") 
-
- 
-
-Rel(System, StaffAdmin, "pending inquiries", "HTTPS") 
-
-Rel(System, StaffAdmin, "consolidated orders (FB, FoodPanda, Grab)", "HTTPS") 
-
-Rel(System, StaffAdmin, "business analytics / reports", "HTTPS") 
-
-
-Rel(System, AISystem, "customer query text (NLP)", "HTTPS/REST") 
-
-Rel(AISystem, System, "automated chatbot response", "HTTPS/REST") 
-
-Rel(System, AISystem, "design prompt parameters", "HTTPS/REST") 
-
-Rel(AISystem, System, "generated cake design visual", "HTTPS/REST") 
-
- 
+Rel(ordering_system, ai_system, "Sends cake design parameters (flavor, tier, theme)", "REST API / HTTPS")
+Rel(ai_system, ordering_system, "Returns generated cake design visual rendering", "REST API / HTTPS")
 
 @enduml
