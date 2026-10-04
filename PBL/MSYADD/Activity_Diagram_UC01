@@ -1,79 +1,72 @@
-@startuml Activity_Diagram_UC01
+@startuml
 title Activity Diagram: UC-01 Manage Account
 
 start
+
 :Open Smart Web Ordering System;
 :Choose Create Account or Sign In;
 
-if (Create account?) then (Yes)
-  :Display registration form;
+if (Create Account?) then (Yes)
+  :Display Registration Form;
   :Enter name, email, and password;
   :Submit registration form;
-  :Check required fields and email format;
-  if (Input valid?) then (Yes)
-    :Check whether email is already registered;
-    if (Email available?) then (Yes)
-      :Create account with authorized default role;
-    else (No)
-      :Notify user that email is already in use;
-      :Correct email or choose Sign In;
-    endif
+  
+  if (Input & Email valid?) then (Yes)
+    :Create account with default role;
   else (No)
-    :Highlight invalid fields and request correction;
-    :Correct information and resubmit;
+    :Display error & request correction;
+    stop
   endif
+
 else (No)
-  :Display Sign In form;
-  :Enter email or username and password;
+  :Display Sign In Form;
+  :Enter credentials;
   :Submit Sign In form;
-  :Validate required fields and format;
-  if (Input valid?) then (Yes)
-    :Compare credentials with stored account records;
-    if (Credentials valid?) then (Yes)
-      :Authenticate user and start session;
-    else (No)
-      :Display login error and offer password reset;
-      :Retry credentials or reset password;
-    endif
+  
+  if (Credentials valid?) then (Yes)
+    :Authenticate user & start session;
   else (No)
-    :Highlight invalid fields and request correction;
-    :Correct information and resubmit;
+    :Display error / offer password reset;
+    stop
   endif
 endif
 
+' Check authorization and route by role
 if (User authenticated?) then (Yes)
-  if (User role is Customer?) then (Yes)
+  if (User role?) then (Customer)
     :Redirect to Customer Home Page;
-  else (Staff or Admin)
+  else (Staff / Admin)
     :Apply assigned role permissions;
     :Redirect to Admin Panel Dashboard;
   endif
-
-  :Choose Edit Profile or Log Out;
-  if (Edit Profile?) then (Yes)
-    :Retrieve and display current account details;
-    :Edit name, contact details, address, or saved information;
-    :Confirm changes;
-    :Validate and save updated account details;
-    if (Updated information valid?) then (Yes)
-      :Display update confirmation;
-    else (No)
-      :Highlight fields and request correction;
-      :Correct fields and resubmit changes;
-    endif
-  else (Log Out)
-    :End user session;
-    :Redirect to Home Page;
-  endif
 else (No)
-  :Return to account form;
+  :Return to Account Form;
+  stop
 endif
 
-if (Session times out?) then (Yes)
+' Main User Actions
+if (User Action?) then (Edit Profile)
+  :Retrieve current account details;
+  :Edit account information;
+  :Submit changes;
+  
+  if (Updated details valid?) then (Yes)
+    :Save details & display confirmation;
+  else (No)
+    :Highlight errors & request correction;
+  endif
+
+else (Log Out)
+  :End user session;
+  :Redirect to Home Page;
+endif
+
+' Session Timeout Check
+if (Session timed out?) then (Yes)
   :Automatically log out user;
   :Redirect to Sign In Page;
 else (No)
-  :Continue or finish account session;
+  :Continue session;
 endif
 
 stop
