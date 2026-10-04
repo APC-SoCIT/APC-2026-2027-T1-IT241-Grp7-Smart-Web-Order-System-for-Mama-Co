@@ -1,0 +1,43 @@
+@startuml Activity_Diagram_UC06
+title Activity Diagram: UC-06 Manage Reports
+
+|Staff/Admin|
+start
+:Log in and navigate to Sales Reports Page from Admin Panel Dashboard;
+|System|
+:Authenticate access rights to reporting features;
+if (Access authorized?) then (Yes)
+  |Staff/Admin|
+  :Select report type and date range or filters;
+  |System|
+  :Compile and aggregate order, payment, and inquiry data;
+  if (Data available for selected criteria?) then (Yes)
+    :Generate analytics dashboard with charts and summary figures;
+    :Display statistics and trends on the Sales Reports Page;
+    |Staff/Admin|
+    :Review performance metrics and sales insights;
+    if (Order volume exceeds normal threshold?) then (Yes)
+      |System|
+      :Flag and alert Staff/Admin about high-demand period;
+    else (No)
+      :Continue monitoring as normal;
+    endif
+    if (Admin wants to export or print the report?) then (Yes)
+      :Select Export or Print;
+      |System|
+      :Compile report into downloadable file or print-ready format;
+      :Provide file for download or send to printer;
+    else (No)
+      :Finish review without exporting;
+    endif
+  else (No)
+    |System|
+    :Display "No data available" message;
+  endif
+else (No)
+  |System|
+  :Display permissions error and deny access;
+endif
+
+stop
+@enduml
