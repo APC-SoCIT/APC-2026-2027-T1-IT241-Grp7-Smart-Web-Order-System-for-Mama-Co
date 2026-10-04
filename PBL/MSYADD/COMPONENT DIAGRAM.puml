@@ -1,51 +1,69 @@
-@startuml ComponentDiagram
+@startuml
 !include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Component.puml
 
-Container(customerApp, "Customer Web App", "React / Next.js")
-Container(adminApp, "Admin & POS Portal", "React / Next.js")
-ContainerDb(database, "PostgreSQL Database", "Supabase")
-System_Ext(openai, "OpenAI API", "External API")
+LAYOUT_WITH_LEGEND()
 
-Container_Boundary(api, "Backend API (Nest.js)") {
-    Component(authCtrl, "Auth Controller", "Nest.js Controller", "Handles registration and authentication endpoints.")
-    Component(authSvc, "Auth Service", "Nest.js Service", "Validates JWT tokens and user roles.")
-    
-    Component(orderCtrl, "Orders Controller", "Nest.js Controller", "Manages checkout, POS orders, and order status updates.")
-    Component(orderSvc, "Orders Service", "Nest.js Service", "Handles order status updates and stock reduction.")
-    
-    Component(aiCtrl, "AI Cake Controller", "Nest.js Controller", "Receives prompt requests for generative cake designs.")
-    Component(aiSvc, "AI Cake Service", "Nest.js Service", "Formats prompts and calls OpenAI DALL-E API.")
-    
-    Component(chatCtrl, "Chatbot Controller", "Nest.js Controller", "Handles customer chat inquiries.")
-    Component(chatSvc, "Chatbot Service", "Nest.js Service", "Processes NLP context and response routing.")
-    
-    Component(invCtrl, "Inventory Controller", "Nest.js Controller", "Manages raw material stock levels.")
-    Component(invSvc, "Inventory Service", "Nest.js Service", "Tracks inventory logs and triggers reorder alerts.")
-    
-    Component(orm, "Database Access Layer", "Prisma / Supabase Client", "Abstracts SQL queries to PostgreSQL database.")
+title Component Diagram for Backend API (Nest.js) - Smart Web Ordering System
+
+' External Containers
+Container(website_app, "Website Application", "React / Next.js", "Customer front-end web portal for ordering, custom cake design, and inquiries.")
+Container(staff_portal, "Staff Portal", "React / Next.js", "Staff portal for processing orders, updating product stock, and managing inquiries.")
+Container(admin_portal, "Admin Portal", "React / Next.js", "Admin portal for user management, system config, and sales analytics.")
+
+ContainerDb(postgres_db, "PostgreSQL Database", "Supabase", "Stores user accounts, orders, products, stock levels, and catalog data.")
+System_Ext(openai_api, "OpenAI API", "External API providing DALL-E image generation and NLP engine.")
+
+' Backend API Container Boundary
+Container_Boundary(backend_api, "Backend API (Nest.js)") {
+
+    ' Controllers
+    Component(auth_controller, "Auth Controller", "Nest.js Controller", "Handles registration, login, and token validation endpoints.")
+    Component(ai_cake_controller, "AI Cake Controller", "Nest.js Controller", "Receives prompt requests for generative cake designs.")
+    Component(chatbot_controller, "Chatbot Controller", "Nest.js Controller", "Handles customer chat inquiries.")
+    Component(orders_controller, "Orders Controller", "Nest.js Controller", "Manages checkout, order fulfillment, and order status updates.")
+    Component(products_controller, "Products Controller", "Nest.js Controller", "Manages product details, pricing, catalog items, and stock quantities.")
+
+    ' Services
+    Component(auth_service, "Auth Service", "Nest.js Service", "Validates JWT tokens and user roles (Customer, Staff, Admin).")
+    Component(orders_service, "Orders Service", "Nest.js Service", "Handles order status updates and deducts product stock upon purchase.")
+    Component(ai_cake_service, "AI Cake Service", "Nest.js Service", "Formats prompts and calls OpenAI DALL-E API.")
+    Component(chatbot_service, "Chatbot Service", "Nest.js Service", "Processes NLP context and response routing.")
+    Component(products_service, "Products Service", "Nest.js Service", "Handles product catalog operations, price changes, and stock management.")
+
+    ' Database Layer
+    Component(db_access_layer, "Database Access Layer", "Prisma / Supabase Client", "Abstracts SQL queries to PostgreSQL database.")
 }
 
-Rel(customerApp, authCtrl,"POST /auth/login")
-Rel(customerApp, orderCtrl,"POST /orders")
-Rel(customerApp, aiCtrl,"POST /ai/generate-cake")
-Rel(customerApp, chatCtrl,"POST /chat")
+' Frontend to controller relations
+Rel(website_app, auth_controller, "POST /auth/login", "HTTPS / JSON")
+Rel(website_app, ai_cake_controller, "POST /ai/generate-cake", "HTTPS / JSON")
+Rel(website_app, chatbot_controller, "POST /chat", "HTTPS / JSON")
+Rel(website_app, orders_controller, "POST /orders", "HTTPS / JSON")
+Rel(website_app, products_controller, "GET /products", "HTTPS / JSON")
 
-Rel(adminApp, orderCtrl,"GET /orders, PATCH /orders/:id")
-Rel(adminApp, invCtrl,"GET/POST /inventory")
+Rel(staff_portal, auth_controller, "POST /auth/login", "HTTPS / JSON")
+Rel(staff_portal, orders_controller, "GET /orders, PATCH /orders/:id", "HTTPS / JSON")
+Rel(staff_portal, products_controller, "GET / PATCH /products/:id/stock", "HTTPS / JSON")
 
-Rel(authCtrl, authSvc,"Uses")
-Rel(orderCtrl, orderSvc,"Uses")
-Rel(aiCtrl, aiSvc,"Uses")
-Rel(chatCtrl, chatSvc,"Uses")
-Rel(invCtrl, invSvc,"Uses")
+Rel(admin_portal, auth_controller, "POST /auth/login", "HTTPS / JSON")
+Rel(admin_portal, products_controller, "POST / PUT / DELETE /products", "HTTPS / JSON")
 
-Rel(orderSvc, invSvc, "Triggers stock deduct")
-Rel(aiSvc, openai, "Generates Image via DALL-E", "HTTPS")
-Rel(chatSvc, openai, "Queries NLP Engine", "HTTPS")
+' Controller to service relations
+Rel(auth_controller, auth_service, "Uses")
+Rel(ai_cake_controller, ai_cake_service, "Uses")
+Rel(chatbot_controller, chatbot_service, "Uses")
+Rel(orders_controller, orders_service, "Uses")
+Rel(products_controller, products_service, "Uses")
 
-Rel(authSvc, orm, "Reads/Writes User Data")
-Rel(orderSvc, orm, "Reads/Writes Order Data")
-Rel(invSvc, orm, "Reads/Writes Stock Data")
-Rel(orm, database, "Executes SQL queries")
+' Service interaction & database relations
+Rel(auth_service, db_access_layer, "Reads / Writes User Data")
+Rel(orders_service, db_access_layer, "Reads / Writes Order Data")
+Rel(orders_service, products_service, "Triggers product stock deduction")
+Rel(products_service, db_access_layer, "Reads / Writes Product & Stock Data")
+
+' External integrations & database execution
+Rel(ai_cake_service, openai_api, "Generates Image via DALL-E", "HTTPS")
+Rel(chatbot_service, openai_api, "Queries NLP Engine", "HTTPS")
+Rel(db_access_layer, postgres_db, "Executes SQL queries", "Prisma Client / TCP")
 
 @enduml
