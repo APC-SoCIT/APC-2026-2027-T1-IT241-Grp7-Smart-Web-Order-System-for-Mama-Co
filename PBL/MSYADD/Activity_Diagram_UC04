@@ -1,0 +1,54 @@
+@startuml Activity_Diagram_UC04
+title Activity Diagram: UC-04 Manage Cake Design
+
+|Customer|
+start
+:Select "Design" from the navigation bar;
+:Enter design preferences (text, flavor, size, colors, occasion, decorations);
+|AI System|
+if (Required design parameters complete?) then (Yes)
+  :Generate one or more visual preview images;
+  :Display generated preview(s) to customer;
+  |Customer|
+  :Review design preview(s);
+  if (Customer wants to ask a clarifying question?) then (Yes)
+    |AI System|
+    :Open chatbot for clarification;
+    |Customer|
+    :Ask a clarifying question;
+    |AI System|
+    :Answer question and keep customer on current design page;
+  else (No)
+    |Customer|
+    :Request design adjustments;
+    |AI System|
+    :Regenerate updated preview(s);
+    :Display updated preview(s) to customer;
+  endif
+  |Customer|
+  :Approve final preferred design;
+  :Select "Add to Cart" or "Order This Design";
+  |System|
+  :Create order from approved design;
+  :Notify Staff/Admin that custom design is ready for feasibility review;
+  |Staff/Admin|
+  :Review design against ingredient availability and preparation feasibility;
+  |System|
+  if (Design feasible?) then (Yes)
+    :Update design status to "Approved";
+    :Attach finalized design to order;
+    :Proceed to Manage Order use case;
+  else (No)
+    :Update design status to "Declined - Design Not Possible";
+    :Notify customer with reasons and alternative suggestions;
+  endif
+else (No)
+  |AI System|
+  :Prompt for missing or unclear information;
+  :Suggest available alternatives;
+  |Customer|
+  :Correct input and resubmit design request;
+endif
+
+stop
+@enduml
