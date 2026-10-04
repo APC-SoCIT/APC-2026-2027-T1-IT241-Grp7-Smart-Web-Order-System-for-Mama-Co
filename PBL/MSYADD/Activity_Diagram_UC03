@@ -1,0 +1,51 @@
+@startuml Activity_Diagram_UC03
+title Activity Diagram: UC-03 Manage Products
+
+|Customer|
+start
+:Customer selects "Products" on the Home Page;
+|System|
+:Retrieve and display the current product catalog;
+|Customer|
+:Select a specific product to view its full details;
+|System|
+:Display product details (price breakdown, size options, ingredients, allergen info);
+
+if (Customer wants to customize the selected product?) then (Yes)
+  :Start Manage Cake Design use case;
+else (No)
+  :Continue browsing the catalog;
+endif
+
+|Staff/Admin|
+:Select "Manage Products" from the Admin Panel Dashboard;
+|System|
+:Display the Manage Products page with all current products;
+|Staff/Admin|
+:Choose Add New Product, or select an existing product to edit or remove;
+|System|
+:Display blank form for add, or pre-filled form for edit;
+|Staff/Admin|
+:Enter or update the product details and click Save or confirm Remove;
+|System|
+:Validate required fields and formatting;
+if (Information valid and complete?) then (Yes)
+  if (Product update conflicts with an active order?) then (Yes)
+    :Warn Staff/Admin before saving change;
+    if (Staff/Admin confirms save?) then (Yes)
+      :Save the product record;
+    else (No)
+      :Cancel the update;
+    endif
+  else (No)
+    :Save the product record to the database;
+  endif
+  :Refresh the live catalog;
+  :Display confirmation message;
+else (No)
+  :Prompt for missing or corrected fields;
+  :Do not save the record;
+endif
+
+stop
+@enduml
