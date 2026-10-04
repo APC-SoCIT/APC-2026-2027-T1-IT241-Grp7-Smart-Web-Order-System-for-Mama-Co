@@ -1,0 +1,47 @@
+@startuml Activity_Diagram_UC02
+title Activity Diagram: UC-02 Manage Inquiry
+
+start
+
+:Customer selects "Inquiries" and fills out the inquiry form
+(name, contact details, email, message);
+
+if (Inquiry submitted from chatbot escalation or Contact Us form?) then (Yes)
+  :Customer submits inquiry;
+  :System validates required fields;
+  if (All required fields valid?) then (Yes)
+    :System creates inquiry record with status "Open";
+    :System assigns inquiry reference number;
+    :System displays confirmation message with reference number;
+    :System adds inquiry to Staff/Admin dashboard queue;
+    :Staff/Admin opens inquiry from dashboard;
+    :System displays inquiry details and related order/account history;
+    :Staff/Admin drafts and sends reply to customer;
+    :System delivers reply via email;
+    :System updates inquiry status to "Answered";
+    :Customer reads reply;
+    if (Customer responds again or needs further help?) then (Yes)
+      :Customer sends follow-up response;
+      :Staff/Admin reviews follow-up;
+      :Staff/Admin drafts another reply;
+      :System updates inquiry status to "Answered";
+      :Customer reads updated response;
+    else (No)
+      :System checks whether inquiry is resolved;
+      if (No further response within set period or Staff/Admin closes it?) then (Yes)
+        :System updates inquiry status to "Closed";
+      else (No)
+        :System keeps inquiry active;
+      endif
+    endif
+  else (No)
+    :System highlights invalid fields;
+    :System prevents submission until corrected;
+    :Customer corrects details and resubmits;
+  endif
+else (No)
+  :Inquiry is rejected or not submitted;
+endif
+
+stop
+@enduml
