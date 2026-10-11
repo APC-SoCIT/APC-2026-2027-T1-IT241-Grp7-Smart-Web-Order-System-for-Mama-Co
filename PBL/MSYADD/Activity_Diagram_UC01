@@ -1,5 +1,5 @@
 @startuml
-title Activity Diagram: UC-01 Manage Account (Single End Point)
+title Activity Diagram: UC-01 Manage Account
 
 |Customer|
 start
