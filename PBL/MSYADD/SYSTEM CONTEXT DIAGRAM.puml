@@ -1,4 +1,4 @@
-@startuml
+@startuml System_Context_Diagram
 !include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Context.puml
 
 SHOW_PERSON_OUTLINE()
@@ -16,6 +16,7 @@ System(ordering_system, "Smart Web Ordering System", "Centralized platform manag
 
 ' External Systems
 System_Ext(ai_system, "AI System", "External NLP chatbot and Generative AI engine for cake design preview generation.")
+System_Ext(payment_gateway, "Payment Gateway", "Processes online payments through GCash or Maya as part of the Process Payment use case.")
 
 ' Customer
 Rel(customer, ordering_system, "Sends registration and login credentials", "HTTPS")
@@ -27,8 +28,14 @@ Rel(ordering_system, customer, "Displays product details and AI chatbot response
 Rel(customer, ordering_system, "Submits custom cake design preferences", "HTTPS")
 Rel(ordering_system, customer, "Renders visual cake preview and pricing", "HTTPS")
 
-Rel(customer, ordering_system, "Submits order details and payment info", "HTTPS")
+Rel(customer, ordering_system, "Submits order details and chosen payment method", "HTTPS")
 Rel(ordering_system, customer, "Sends order confirmation and receipt", "HTTPS")
+
+' Payment Gateway
+Rel(ordering_system, payment_gateway, "Process Payment: submits GCash or Maya payment", "HTTPS")
+Rel(payment_gateway, ordering_system, "Returns payment result: successful, failed, or declined", "HTTPS")
+Rel(ordering_system, customer, "For failed or declined payment, offers retry with same or different payment method", "HTTPS")
+Rel(ordering_system, customer, "Processes cash on delivery as the chosen payment method", "HTTPS")
 
 ' Staff
 Rel(staff, ordering_system, "Updates product inventory and catalog items", "HTTPS")
