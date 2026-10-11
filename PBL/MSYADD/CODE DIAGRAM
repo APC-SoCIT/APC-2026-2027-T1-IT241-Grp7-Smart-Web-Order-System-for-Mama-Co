@@ -1,0 +1,99 @@
+@startuml
+title Cake Ordering System - Full Code/Class Diagram
+
+' Note
+note "Integrates AI System for inquiry replies\nand generative cake design recommendations." as NoteAI
+
+' Package 1: Account Management (Use Case 1)
+package "Account Module" {
+    class AccountController {
+        +manageAccount()
+    }
+    class Account {
+        -id: int
+        -name: String
+        -role: String
+    }
+    AccountController --> Account
+}
+
+' Package 2: Inquiry Management (Use Case 2)
+package "Inquiry Module" {
+    class InquiryController {
+        +manageInquiry()
+        +getAIReply()
+    }
+    class Inquiry {
+        -id: int
+        -message: String
+    }
+    InquiryController --> Inquiry
+}
+
+' Package 3: Product & Cake Design (Use Cases 3 & 4)
+package "Product & Design Module" {
+    class ProductController {
+        +manageProducts()
+        +manageCakeDesign()
+        +getAIDesign()
+    }
+    class Product {
+        -id: int
+        -name: String
+        -price: double
+    }
+    class CakeDesign {
+        -id: int
+        -design_details: String
+    }
+    ProductController --> Product
+    ProductController --> CakeDesign
+    Product "1" --> "*" CakeDesign
+}
+
+' Package 4: Order & Payment Processing (Use Cases 3.1 & 3.1.1)
+package "Order & Payment Module" {
+    class OrderController {
+        +manageOrder()
+        +processPayment()
+    }
+    class Order {
+        -id: int
+        -total_amount: double
+    }
+    class Payment {
+        -id: int
+        -status: String
+    }
+    OrderController --> Order
+    OrderController --> Payment
+    Order "1" --> "1" Payment
+}
+
+' Package 5: Report Management (Use Case 5)
+package "Report Module" {
+    class ReportController {
+        +manageReports()
+    }
+    class Report {
+        -id: int
+        -data: String
+    }
+    ReportController --> Report
+}
+
+' External AI System Integration
+class AISystem <<external>> {
+    +getSuggestions(prompt: String): String
+}
+
+' AI System Dependencies
+InquiryController ..> AISystem : requests AI replies
+ProductController ..> AISystem : requests design recommendations
+
+' Domain Entity Associations across modules
+Account "1" --> "*" Inquiry : submits
+Account "1" --> "*" Order : places
+Order "1" --> "*" Product : contains
+
+@enduml
