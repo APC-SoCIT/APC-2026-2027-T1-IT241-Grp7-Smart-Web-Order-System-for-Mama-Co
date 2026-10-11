@@ -12,56 +12,56 @@ start
 :Select a specific product to view its full details;
 
 |System|
-:Display product details (price breakdown, size options, ingredients, allergen info)[cite: 1];
+:Display product details (price breakdown, size options, ingredients, allergen info);
 
 if (Customer wants to customize the selected product?) then (Yes)
-  :Start Manage Cake Design use case[cite: 1];
+  :Start Manage Cake Design use case;
 else (No)
-  :Continue browsing the catalog[cite: 1];
+  :Continue browsing the catalog;
 endif
 
 |Staff/Admin|
-:Select "Manage Products" from the Admin Panel Dashboard[cite: 1];
+:Select "Manage Products" from the Admin Panel Dashboard;
 
 |System|
-:Display the Manage Products page with all current products[cite: 1];
+:Display the Manage Products page with all current products;
 
 |Staff/Admin|
-:Choose Add New Product, or select an existing product to edit or remove[cite: 1];
+:Choose Add New Product, or select an existing product to edit or remove;
 
 |System|
-:Display blank form for add, or pre-filled form for edit[cite: 1];
+:Display blank form for add, or pre-filled form for edit;
 
 |Staff/Admin|
-:Enter or update the product details and click Save or confirm Remove[cite: 1];
+:Enter or update the product details and click Save or confirm Remove;
 
 |System|
-:Validate required fields and formatting[cite: 1];
+:Validate required fields and formatting;
 
 if (Information valid and complete?) then (Yes)
   if (Product update conflicts with an active order?) then (Yes)
     |System|
-    :Warn Staff/Admin before saving change[cite: 1];
+    :Warn Staff/Admin before saving change;
     
     |Staff/Admin|
     if (Staff/Admin confirms save?) then (Yes)
       |System|
-      :Save the product record[cite: 1];
+      :Save the product record;
     else (No)
-      :Cancel the update[cite: 1];
+      :Cancel the update;
     endif
   else (No)
     |System|
-    :Save the product record to the database[cite: 1];
+    :Save the product record to the database;
   endif
   
   |System|
-  :Refresh the live catalog[cite: 1];
-  :Display confirmation message[cite: 1];
+  :Refresh the live catalog;
+  :Display confirmation message;
 else (No)
   |System|
-  :Prompt for missing or corrected fields[cite: 1];
-  :Do not save the record[cite: 1];
+  :Prompt for missing or corrected fields;
+  :Do not save the record;
 endif
 
 |System|
