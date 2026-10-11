@@ -1,0 +1,51 @@
+@startuml
+title Activity Diagram: UC-04 Manage Stocks
+
+|Staff/Admin|
+start
+:Select "Manage Stocks" from the Admin Panel Dashboard\n(or respond to stock/sync alert);
+
+|System|
+:Retrieve and display current stock levels,\nlow-stock alerts, and item logs;
+
+if (Trigger source?) then (Manual Staff Management)
+  |Staff/Admin|
+  :Review stock levels, input new stock shipments,\nadjust quantities, or update low-stock thresholds;
+  :Save stock updates;
+
+  |System|
+  :Validate inputs (check for valid non-negative quantities)[cite: 1];
+
+  if (Inputs valid and non-negative?) then (Yes)
+    :Record updated stock quantities in database,\nrefresh view, and display confirmation message[cite: 1];
+  else (No)
+    :Highlight invalid/negative field,\ndisplay error message, and prevent saving[cite: 1];
+    
+    |Staff/Admin|
+    :Correct input and resubmit[cite: 1];
+  endif
+
+else (Automated Order / Sync Event)
+  |System|
+  :Process automated stock check, deduction,\nrestoration, or third-party sync event[cite: 1];
+
+  if (Event type?) then (Order Placement / Confirmation)
+    if (Sufficient stock available?) then (Yes)
+      :Automatically deduct reserved quantities\nfrom stocks[cite: 1];
+      :Flag items or trigger low-stock notifications\nif quantities drop below thresholds[cite: 1];
+    else (No - Insufficient Stock)
+      :Flag order item and notify customer\nwith substitute or cancellation options[cite: 1];
+    endif
+  else if (Order Cancellation)
+    :Automatically release reserved stock\nback into inventory[cite: 1];
+  else (Third-Party Sync Failure)
+    :Log error and alert Staff/Admin\nto manually reconcile stock count[cite: 1];
+    
+    |Staff/Admin|
+    :Review alert and manually reconcile stock count[cite: 1];
+  endif
+endif
+
+|System|
+stop
+@enduml
