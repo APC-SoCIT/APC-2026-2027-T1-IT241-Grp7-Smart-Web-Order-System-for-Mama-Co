@@ -1,51 +1,57 @@
-@startuml
+@startuml Activity Diagram - UC-04 Manage Stocks
+
 title Activity Diagram: UC-04 Manage Stocks
 
 |Staff/Admin|
 start
-:Select "Manage Stocks" from the Admin Panel Dashboard\n(or respond to stock/sync alert);
+:Select "Manage Stocks" from Admin Panel Dashboard;
 
 |System|
-:Retrieve and display current stock levels,\nlow-stock alerts, and item logs;
+:Retrieve and display current stock levels, low-stock alerts, and item logs;
 
-if (Trigger source?) then (Manual Staff Management)
-  |Staff/Admin|
-  :Review stock levels, input new stock shipments,\nadjust quantities, or update low-stock thresholds;
-  :Save stock updates;
+|Staff/Admin|
+:Review current stock levels for products and raw ingredients;
+:Input new stock shipments, adjust quantities manually, or update low-stock thresholds;
+:Save the stocks updates;
 
-  |System|
-  :Validate inputs (check for valid non-negative quantities)[cite: 1];
-
-  if (Inputs valid and non-negative?) then (Yes)
-    :Record updated stock quantities in database,\nrefresh view, and display confirmation message[cite: 1];
-  else (No)
-    :Highlight invalid/negative field,\ndisplay error message, and prevent saving[cite: 1];
-    
-    |Staff/Admin|
-    :Correct input and resubmit[cite: 1];
-  endif
-
-else (Automated Order / Sync Event)
-  |System|
-  :Process automated stock check, deduction,\nrestoration, or third-party sync event[cite: 1];
-
-  if (Event type?) then (Order Placement / Confirmation)
-    if (Sufficient stock available?) then (Yes)
-      :Automatically deduct reserved quantities\nfrom stocks[cite: 1];
-      :Flag items or trigger low-stock notifications\nif quantities drop below thresholds[cite: 1];
-    else (No - Insufficient Stock)
-      :Flag order item and notify customer\nwith substitute or cancellation options[cite: 1];
+|System|
+:Validate inputs;
+if (Inputs valid and non-negative?) then (Yes)
+    :Record the updated stock quantities in the database;
+    :Refresh the stocks view and display a confirmation message;
+    if (Quantity below set threshold?) then (Yes)
+        :Flag items as "Out of Stock" or trigger low-stock notifications;
+    else (No)
     endif
-  else if (Order Cancellation)
-    :Automatically release reserved stock\nback into inventory[cite: 1];
-  else (Third-Party Sync Failure)
-    :Log error and alert Staff/Admin\nto manually reconcile stock count[cite: 1];
-    
-    |Staff/Admin|
-    :Review alert and manually reconcile stock count[cite: 1];
-  endif
+else (No)
+    :Highlight the invalid field, display an error message, and prevent saving until corrected;
 endif
 
 |System|
+if (Order Event or Sync Occurs?) then (Order Placement)
+    :Automatically check stock availability during checkout process;
+    if (Sufficient stock?) then (Yes)
+        :Proceed with order;
+    else (No)
+        :Flag the order item and notify customer with substitute or cancellation options;
+    endif
+else
+    if (Order Event or Sync Occurs?) then (Order Confirmation)
+        :Automatically deduct reserved quantities from stocks;
+        if (Quantity drops below threshold?) then (Yes)
+            :Trigger low-stock notifications or flag items as "Out of Stock";
+        else (No)
+        endif
+    else
+        if (Order Event or Sync Occurs?) then (Order Cancellation)
+            :Automatically release reserved stock back into inventory;
+        else (Third-Party Sync Failure)
+            :Log the error and alert Staff/Admin to manually reconcile the stock count;
+        endif
+    endif
+endif
+
+|Staff/Admin|
 stop
+
 @enduml
