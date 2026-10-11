@@ -1,43 +1,47 @@
-@startuml Activity_Diagram_UC06
-title Activity Diagram: UC-06 Manage Reports
+@startuml
+title Activity Diagram: UC-07 Manage Reports
 
 |Admin|
 start
-:Log in and navigate to Sales Reports Page from Admin Panel Dashboard;
+:Log in and navigate to Sales Reports Page\nfrom Admin Panel Dashboard;
+
 |System|
-:Authenticate access rights to reporting features;
+:Authenticate user's access rights\nto reporting features;
+
 if (Access authorized?) then (Yes)
   |Admin|
-  :Select report type and date range or filters;
+  :Select the report type and date range/filters\n(e.g., sales by platform, best-selling designs, inventory usage);
+
   |System|
-  :Compile and aggregate order, payment, and inquiry data;
-  if (Data available for selected criteria?) then (Yes)
-    :Generate analytics dashboard with charts and summary figures;
-    :Display statistics and trends on the Sales Reports Page;
+  :Compile and aggregate relevant order,\npayment, and inquiry data for selected criteria;
+
+  if (Sufficient data exists for filters?) then (Yes)
+    :Display analytics dashboard with visualized data\n(graphs, tables, summary figures);
+    :Automatically flag and alert Admin\nwhen order volume exceeds normal threshold;
+
     |Admin|
-    :Review performance metrics and sales insights;
-    if (Order volume exceeds normal threshold?) then (Yes)
+    :Review generated statistics and charts\non the Sales Reports Page;
+
+    if (Export or Print requested?) then (Yes)
+      |Admin|
+      :Select "Export" or "Print";
+
       |System|
-      :Flag and alert Staff/Admin about high-demand period;
-    else (No)
-      :Continue monitoring as normal;
-    endif
-    if (Admin wants to export or print the report?) then (Yes)
-      :Select Export or Print;
-      |System|
-      :Compile report into downloadable file or print-ready format;
+      :Compile data into a downloadable file\n(e.g., PDF, Excel) or send to printer;
       :Provide file for download or send to printer;
     else (No)
+      |Admin|
       :Finish review without exporting;
     endif
-  else (No)
+  else (No - Insufficient Data)
     |System|
     :Display "No data available" message;
   endif
-else (No)
+else (No - Access Denied)
   |System|
-  :Display permissions error and deny access;
+  :Display permissions error and deny dashboard access;
 endif
 
+|System|
 stop
 @enduml
