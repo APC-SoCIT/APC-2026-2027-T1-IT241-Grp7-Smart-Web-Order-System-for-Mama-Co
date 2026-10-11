@@ -1,69 +1,81 @@
 @startuml
-!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Component.puml
+!include <C4/C4_Component>
 
 LAYOUT_WITH_LEGEND()
 
 title Component Diagram for Backend API (Nest.js) - Smart Web Ordering System
 
 ' External Containers
-Container(website_app, "Website Application", "React / Next.js", "Customer front-end web portal for ordering, custom cake design, and inquiries.")
-Container(staff_portal, "Staff Portal", "React / Next.js", "Staff portal for processing orders, updating product stock, and managing inquiries.")
-Container(admin_portal, "Admin Portal", "React / Next.js", "Admin portal for user management, system config, and sales analytics.")
+Container(web_app, "Web Application", "React / Next.js", "Single web domain for Customer (ordering, cake design, chatbot, inquiries), Staff (orders, stocks, inquiries) and Admin (accounts, products, reports).")
 
-ContainerDb(postgres_db, "PostgreSQL Database", "Supabase", "Stores user accounts, orders, products, stock levels, and catalog data.")
-System_Ext(openai_api, "OpenAI API", "External API providing DALL-E image generation and NLP engine.")
+ContainerDb(postgres_db, "PostgreSQL Database", "Supabase", "Stores accounts, orders, payments, products, stock levels, designs, and inquiries.")
+System_Ext(payment_gateway, "Payment Gateway", "External payment provider that authorizes and confirms online payments.")
+System_Ext(ai_system, "AI System (OpenAI API)", "External API providing DALL-E image generation and NLP engine.")
 
 ' Backend API Container Boundary
 Container_Boundary(backend_api, "Backend API (Nest.js)") {
 
-    ' Controllers
-    Component(auth_controller, "Auth Controller", "Nest.js Controller", "Handles registration, login, and token validation endpoints.")
-    Component(ai_cake_controller, "AI Cake Controller", "Nest.js Controller", "Receives prompt requests for generative cake designs.")
-    Component(chatbot_controller, "Chatbot Controller", "Nest.js Controller", "Handles customer chat inquiries.")
-    Component(orders_controller, "Orders Controller", "Nest.js Controller", "Manages checkout, order fulfillment, and order status updates.")
-    Component(products_controller, "Products Controller", "Nest.js Controller", "Manages product details, pricing, catalog items, and stock quantities.")
+    ' Controllers (named after the Use Case Diagram)
+    Component(account_controller, "Account Controller", "Nest.js Controller", "Manage Account: registration, login, profile updates, and role-based access.")
+    Component(inquiry_controller, "Inquiry Controller", "Nest.js Controller", "Manage Inquiry: submit, track, and reply to inquiries.")
+    Component(chatbot_controller, "Chatbot Controller", "Nest.js Controller", "Handles customer chat and escalates unresolved chats to Manage Inquiry.")
+    Component(products_controller, "Products Controller", "Nest.js Controller", "Manage Products and Manage Stocks: details, pricing, catalog, and stock quantities.")
+    Component(cake_design_controller, "Cake Design Controller", "Nest.js Controller", "Manage Cake Design: prompt requests, design review, approve or deny.")
+    Component(orders_controller, "Orders Controller", "Nest.js Controller", "Manage Order: checkout, order fulfillment, and order status updates.")
+    Component(payment_controller, "Payment Controller", "Nest.js Controller", "Process Payment: handles payment for orders.")
+    Component(reports_controller, "Reports Controller", "Nest.js Controller", "Manage Reports: sales and order analytics.")
 
     ' Services
-    Component(auth_service, "Auth Service", "Nest.js Service", "Validates JWT tokens and user roles (Customer, Staff, Admin).")
+    Component(account_service, "Account Service", "Nest.js Service", "Validates credentials, JWT tokens, and user roles (Customer, Staff, Admin).")
+    Component(inquiry_service, "Inquiry Service", "Nest.js Service", "Records inquiries with reference number and status, and manages replies.")
+    Component(chatbot_service, "Chatbot Service", "Nest.js Service", "Processes NLP context, response routing, and escalation.")
+    Component(products_service, "Products Service", "Nest.js Service", "Handles catalog operations, price changes, and stock management.")
+    Component(cake_design_service, "Cake Design Service", "Nest.js Service", "Formats prompts, calls DALL-E, and stores design approval status.")
     Component(orders_service, "Orders Service", "Nest.js Service", "Handles order status updates and deducts product stock upon purchase.")
-    Component(ai_cake_service, "AI Cake Service", "Nest.js Service", "Formats prompts and calls OpenAI DALL-E API.")
-    Component(chatbot_service, "Chatbot Service", "Nest.js Service", "Processes NLP context and response routing.")
-    Component(products_service, "Products Service", "Nest.js Service", "Handles product catalog operations, price changes, and stock management.")
+    Component(payment_service, "Payment Service", "Nest.js Service", "Records and verifies payments for orders.")
+    Component(reports_service, "Reports Service", "Nest.js Service", "Aggregates order, payment, and stock data into reports.")
 
     ' Database Layer
     Component(db_access_layer, "Database Access Layer", "Prisma / Supabase Client", "Abstracts SQL queries to PostgreSQL database.")
 }
 
 ' Frontend to controller relations
-Rel(website_app, auth_controller, "POST /auth/login", "HTTPS / JSON")
-Rel(website_app, ai_cake_controller, "POST /ai/generate-cake", "HTTPS / JSON")
-Rel(website_app, chatbot_controller, "POST /chat", "HTTPS / JSON")
-Rel(website_app, orders_controller, "POST /orders", "HTTPS / JSON")
-Rel(website_app, products_controller, "GET /products", "HTTPS / JSON")
-
-Rel(staff_portal, auth_controller, "POST /auth/login", "HTTPS / JSON")
-Rel(staff_portal, orders_controller, "GET /orders, PATCH /orders/:id", "HTTPS / JSON")
-Rel(staff_portal, products_controller, "GET / PATCH /products/:id/stock", "HTTPS / JSON")
-
-Rel(admin_portal, auth_controller, "POST /auth/login", "HTTPS / JSON")
-Rel(admin_portal, products_controller, "POST / PUT / DELETE /products", "HTTPS / JSON")
+Rel(web_app, account_controller, "POST /auth/login, /auth/register", "HTTPS / JSON")
+Rel(web_app, inquiry_controller, "POST / GET / PATCH /inquiries", "HTTPS / JSON")
+Rel(web_app, chatbot_controller, "POST /chat", "HTTPS / JSON")
+Rel(web_app, products_controller, "GET / POST / PUT / PATCH / DELETE /products", "HTTPS / JSON")
+Rel(web_app, cake_design_controller, "POST /ai/generate-cake, PATCH /designs/:id", "HTTPS / JSON")
+Rel(web_app, orders_controller, "POST /orders, GET / PATCH /orders/:id", "HTTPS / JSON")
+Rel(web_app, payment_controller, "POST /payments", "HTTPS / JSON")
+Rel(web_app, reports_controller, "GET /reports", "HTTPS / JSON")
 
 ' Controller to service relations
-Rel(auth_controller, auth_service, "Uses")
-Rel(ai_cake_controller, ai_cake_service, "Uses")
+Rel(account_controller, account_service, "Uses")
+Rel(inquiry_controller, inquiry_service, "Uses")
 Rel(chatbot_controller, chatbot_service, "Uses")
-Rel(orders_controller, orders_service, "Uses")
 Rel(products_controller, products_service, "Uses")
+Rel(cake_design_controller, cake_design_service, "Uses")
+Rel(orders_controller, orders_service, "Uses")
+Rel(payment_controller, payment_service, "Uses")
+Rel(reports_controller, reports_service, "Uses")
 
 ' Service interaction & database relations
-Rel(auth_service, db_access_layer, "Reads / Writes User Data")
+Rel(account_service, db_access_layer, "Reads / Writes User Data")
+Rel(inquiry_service, db_access_layer, "Reads / Writes Inquiry Data")
+Rel(chatbot_service, inquiry_service, "Escalates unresolved chats")
+Rel(products_service, db_access_layer, "Reads / Writes Product & Stock Data")
+Rel(cake_design_service, db_access_layer, "Reads / Writes Design Data")
 Rel(orders_service, db_access_layer, "Reads / Writes Order Data")
 Rel(orders_service, products_service, "Triggers product stock deduction")
-Rel(products_service, db_access_layer, "Reads / Writes Product & Stock Data")
+Rel(orders_service, payment_service, "Includes payment processing")
+Rel(payment_service, db_access_layer, "Reads / Writes Payment Data")
+Rel(reports_service, db_access_layer, "Reads Order, Payment & Stock Data")
 
 ' External integrations & database execution
-Rel(ai_cake_service, openai_api, "Generates Image via DALL-E", "HTTPS")
-Rel(chatbot_service, openai_api, "Queries NLP Engine", "HTTPS")
+Rel(cake_design_service, ai_system, "Generates Image via DALL-E", "HTTPS")
+Rel(chatbot_service, ai_system, "Queries NLP Engine", "HTTPS")
+Rel(inquiry_service, ai_system, "Requests AI reply suggestions", "HTTPS")
+Rel(payment_service, payment_gateway, "Sends payment request and receives confirmation", "HTTPS")
 Rel(db_access_layer, postgres_db, "Executes SQL queries", "Prisma Client / TCP")
 
 @enduml
