@@ -3,16 +3,16 @@ title Activity Diagram: UC-03 Manage Products
 
 |Customer|
 start
-:Customer selects "Products" on the Home Page;
+:[Step 1.0] Customer selects "Products"\non the Home Page;
 
 |System|
-:Retrieve and display the current product catalog;
+:[Step 1.1] Retrieve and display the\ncurrent product catalog;
 
 |Customer|
-:Select a specific product to view its full details;
+:[Step 2.0] Select a specific product\nto view its full details;
 
 |System|
-:Display product details (price breakdown, size options, ingredients, allergen info);
+:[Step 2.1] Display product details (price breakdown,\nsize options, ingredients, allergen info);
 
 if (Customer wants to customize the selected product?) then (Yes)
   :Start Manage Cake Design use case;
@@ -21,47 +21,40 @@ else (No)
 endif
 
 |Staff/Admin|
-:Select "Manage Products" from the Admin Panel Dashboard;
+:[Step 3.0] Select "Manage Products"\nfrom the Admin Panel Dashboard;
 
 |System|
-:Display the Manage Products page with all current products;
+:[Step 3.1] Display the Manage Products page\nwith all current products;
 
 |Staff/Admin|
-:Choose Add New Product, or select an existing product to edit or remove;
+:[Step 4.0] Choose Add New Product, or select\nan existing product to edit or remove;
 
 |System|
-:Display blank form for add, or pre-filled form for edit;
+:[Step 4.1] Display blank form for add,\nor pre-filled form for edit;
 
 |Staff/Admin|
-:Enter or update the product details and click Save or confirm Remove;
+:[Step 5.0] Enter or update the product details\nand click Save or confirm Remove;
 
 |System|
-:Validate required fields and formatting;
+:[Step 5.1] Validate required fields and formatting;
 
 if (Information valid and complete?) then (Yes)
   if (Product update conflicts with an active order?) then (Yes)
-    |System|
-    :Warn Staff/Admin before saving change;
-    
-    |Staff/Admin|
+    :[Exc 5.2.1] Warn Staff/Admin\nbefore saving change;
     if (Staff/Admin confirms save?) then (Yes)
-      |System|
-      :Save the product record;
+      :[Step 5.2] Save the product record;
     else (No)
       :Cancel the update;
     endif
   else (No)
-    |System|
-    :Save the product record to the database;
+    :[Step 5.2] Save the product record to the database;
   endif
   
-  |System|
-  :Refresh the live catalog;
-  :Display confirmation message;
+  :[Step 5.2] Refresh the live catalog;
+  :[Step 5.3] Display confirmation message;
 else (No)
-  |System|
-  :Prompt for missing or corrected fields;
-  :Do not save the record;
+  :[Exc 5.1.1] Prompt for missing or\ncorrected fields;
+  :[Exc 5.1.1] Do not save the record;
 endif
 
 |System|
