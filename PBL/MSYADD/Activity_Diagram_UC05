@@ -1,54 +1,68 @@
-@startuml Activity_Diagram_UC04
-title Activity Diagram: UC-04 Manage Cake Design
+@startuml
+title Activity Diagram: UC-05 Manage Cake Design
 
 |Customer|
 start
-:Select "Design" from the navigation bar;
-:Enter design preferences (text, flavor, size, colors, occasion, decorations);
+:Select "Design" from the navigation bar\nand open Cake Designer page;
+:Enter design preferences\n(text, flavor, size, colors, occasion, etc.);
+:Submit design request and wait for preview;
+
 |AI System|
-if (Required design parameters complete?) then (Yes)
-  :Generate one or more visual preview images;
-  :Display generated preview(s) to customer;
+:Receive input and check that\nrequired parameters are complete;
+
+if (Input complete & parameters valid?) then (Yes)
+  :Generate visual preview images\nof the custom cake[cite: 1];
+  :Display generated preview(s) to customer[cite: 1];
+
   |Customer|
-  :Review design preview(s);
-  if (Customer wants to ask a clarifying question?) then (Yes)
-    |AI System|
-    :Open chatbot for clarification;
+  :Review generated cake design preview(s)[cite: 1];
+
+  if (Customer action?) then (Ask Question via Chatbot)
     |Customer|
-    :Ask a clarifying question;
+    :Use AI Chatbot to ask clarifying question\nabout a design option or term[cite: 1];
+
     |AI System|
-    :Answer question and keep customer on current design page;
-  else (No)
+    :Minimize/close chatbot window\nand keep customer on design page[cite: 1];
+
+  else if (Request Changes / Adjustments)
     |Customer|
-    :Request design adjustments;
+    :Request design adjustments\n(e.g., color, decorations, size/tier)[cite: 1];
+
     |AI System|
-    :Regenerate updated preview(s);
-    :Display updated preview(s) to customer;
+    :Regenerate updated preview(s)[cite: 1];
+    :Display updated preview(s) to customer[cite: 1];
+
+  else (Save & Order Design)
+    |Customer|
+    :Select and order the final preferred design\n("Add to Cart" / "Order This Design")[cite: 1];
+
+    |System|
+    :Notify Staff/Admin that a new\ncustom design is ready for review[cite: 1];
+
+    |Staff/Admin|
+    :Review saved design against ingredient\navailability and preparation feasibility[cite: 1];
+
+    |System|
+    if (Design feasible / approved?) then (Yes)
+      :Update design status to "Approved"[cite: 1];
+      :Attach finalized design to new order\n(Manage Order)[cite: 1];
+    else (No - Declined)
+      :Update design status to\n"Declined - Design Not Possible"[cite: 1];
+      :Send notification to customer with notes\non why design cannot be made[cite: 1];
+      
+      |Customer|
+      :Prompt to submit alternative or\nsimplified design request[cite: 1];
+    endif
   endif
-  |Customer|
-  :Approve final preferred design;
-  :Select "Add to Cart" or "Order This Design";
-  |System|
-  :Create order from approved design;
-  :Notify Staff/Admin that custom design is ready for feasibility review;
-  |Staff/Admin|
-  :Review design against ingredient availability and preparation feasibility;
-  |System|
-  if (Design feasible?) then (Yes)
-    :Update design status to "Approved";
-    :Attach finalized design to order;
-    :Proceed to Manage Order use case;
-  else (No)
-    :Update design status to "Declined - Design Not Possible";
-    :Notify customer with reasons and alternative suggestions;
-  endif
-else (No)
+
+else (No - Incomplete / Unavailable)
   |AI System|
-  :Prompt for missing or unclear information;
-  :Suggest available alternatives;
+  :Prompt for clarification or suggest\navailable alternatives[cite: 1];
+
   |Customer|
-  :Correct input and resubmit design request;
+  :Correct input or select alternative[cite: 1];
 endif
 
+|System|
 stop
 @enduml
