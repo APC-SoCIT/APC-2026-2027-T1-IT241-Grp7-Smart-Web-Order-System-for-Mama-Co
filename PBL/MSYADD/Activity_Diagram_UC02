@@ -1,47 +1,63 @@
-@startuml Activity_Diagram_UC02
+@startuml
 title Activity Diagram: UC-02 Manage Inquiry
 
+|Customer|
 start
+:Select "Inquiries" / "Contact Us" on website\n(or AI Chatbot conversation escalates);
+:Fill out inquiry form\n(name, contact details, email, message);
+:Submit inquiry;
 
-:Customer selects "Inquiries" and fills out the inquiry form
-(name, contact details, email, message);
+|System|
+:Validate that all required fields are completed[cite: 1];
 
-if (Inquiry submitted from chatbot escalation or Contact Us form?) then (Yes)
-  :Customer submits inquiry;
-  :System validates required fields;
-  if (All required fields valid?) then (Yes)
-    :System creates inquiry record with status "Open";
-    :System assigns inquiry reference number;
-    :System displays confirmation message with reference number;
-    :System adds inquiry to Staff/Admin dashboard queue;
-    :Staff/Admin opens inquiry from dashboard;
-    :System displays inquiry details and related order/account history;
-    :Staff/Admin drafts and sends reply to customer;
-    :System delivers reply via email;
-    :System updates inquiry status to "Answered";
-    :Customer reads reply;
-    if (Customer responds again or needs further help?) then (Yes)
-      :Customer sends follow-up response;
-      :Staff/Admin reviews follow-up;
-      :Staff/Admin drafts another reply;
-      :System updates inquiry status to "Answered";
-      :Customer reads updated response;
-    else (No)
-      :System checks whether inquiry is resolved;
-      if (No further response within set period or Staff/Admin closes it?) then (Yes)
-        :System updates inquiry status to "Closed";
-      else (No)
-        :System keeps inquiry active;
-      endif
-    endif
+if (All required fields valid?) then (Yes)
+  :Create new inquiry record with status "Open"\nand assign a reference number[cite: 1];
+  :Display confirmation message with reference number[cite: 1];
+  :Add inquiry to Staff/Admin dashboard queue[cite: 1];
+
+  |Staff/Admin|
+  :Open inquiry from dashboard and review details[cite: 1];
+
+  |System|
+  :Display inquiry details and related order/account history[cite: 1];
+
+  |Staff/Admin|
+  :Draft and send reply to customer[cite: 1];
+
+  |System|
+  :Deliver reply via email and\nupdate inquiry status to "Answered"[cite: 1];
+
+  |Customer|
+  :Read reply[cite: 1];
+
+  if (Customer responds again or needs further help?) then (Yes)
+    :Send follow-up response[cite: 1];
+    
+    |Staff/Admin|
+    :Review follow-up and draft another reply[cite: 1];
+    
+    |System|
+    :Update inquiry status to "Answered"[cite: 1];
+    
+    |Customer|
+    :Read updated response[cite: 1];
   else (No)
-    :System highlights invalid fields;
-    :System prevents submission until corrected;
-    :Customer corrects details and resubmits;
+    |System|
+    if (No further response within set period or Staff/Admin closes it?) then (Yes)
+      :Update inquiry status to "Closed"[cite: 1];
+    else (No)
+      :Keep inquiry active[cite: 1];
+    endif
   endif
+
 else (No)
-  :Inquiry is rejected or not submitted;
+  |System|
+  :Highlight invalid/missing fields and\nprevent submission until corrected[cite: 1];
+  
+  |Customer|
+  :Correct details and resubmit[cite: 1];
 endif
 
+|System|
 stop
 @enduml
