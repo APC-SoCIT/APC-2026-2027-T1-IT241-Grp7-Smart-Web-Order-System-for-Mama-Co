@@ -1,8 +1,6 @@
 @startuml
 title Activity Diagram: UC-02 Manage Inquiry
 
-skinparam linetype ortho
-
 |Customer|
 start
 :Select "Inquiries" / "Contact Us" on website\n(or AI Chatbot conversation escalates);
