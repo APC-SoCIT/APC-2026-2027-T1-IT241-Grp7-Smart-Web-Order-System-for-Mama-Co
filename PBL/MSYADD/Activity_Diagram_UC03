@@ -1,51 +1,69 @@
-@startuml Activity_Diagram_UC03
+@startuml
 title Activity Diagram: UC-03 Manage Products
 
 |Customer|
 start
 :Customer selects "Products" on the Home Page;
+
 |System|
 :Retrieve and display the current product catalog;
+
 |Customer|
 :Select a specific product to view its full details;
+
 |System|
-:Display product details (price breakdown, size options, ingredients, allergen info);
+:Display product details (price breakdown, size options, ingredients, allergen info)[cite: 1];
 
 if (Customer wants to customize the selected product?) then (Yes)
-  :Start Manage Cake Design use case;
+  :Start Manage Cake Design use case[cite: 1];
 else (No)
-  :Continue browsing the catalog;
+  :Continue browsing the catalog[cite: 1];
 endif
 
 |Staff/Admin|
-:Select "Manage Products" from the Admin Panel Dashboard;
+:Select "Manage Products" from the Admin Panel Dashboard[cite: 1];
+
 |System|
-:Display the Manage Products page with all current products;
+:Display the Manage Products page with all current products[cite: 1];
+
 |Staff/Admin|
-:Choose Add New Product, or select an existing product to edit or remove;
+:Choose Add New Product, or select an existing product to edit or remove[cite: 1];
+
 |System|
-:Display blank form for add, or pre-filled form for edit;
+:Display blank form for add, or pre-filled form for edit[cite: 1];
+
 |Staff/Admin|
-:Enter or update the product details and click Save or confirm Remove;
+:Enter or update the product details and click Save or confirm Remove[cite: 1];
+
 |System|
-:Validate required fields and formatting;
+:Validate required fields and formatting[cite: 1];
+
 if (Information valid and complete?) then (Yes)
   if (Product update conflicts with an active order?) then (Yes)
-    :Warn Staff/Admin before saving change;
+    |System|
+    :Warn Staff/Admin before saving change[cite: 1];
+    
+    |Staff/Admin|
     if (Staff/Admin confirms save?) then (Yes)
-      :Save the product record;
+      |System|
+      :Save the product record[cite: 1];
     else (No)
-      :Cancel the update;
+      :Cancel the update[cite: 1];
     endif
   else (No)
-    :Save the product record to the database;
+    |System|
+    :Save the product record to the database[cite: 1];
   endif
-  :Refresh the live catalog;
-  :Display confirmation message;
+  
+  |System|
+  :Refresh the live catalog[cite: 1];
+  :Display confirmation message[cite: 1];
 else (No)
-  :Prompt for missing or corrected fields;
-  :Do not save the record;
+  |System|
+  :Prompt for missing or corrected fields[cite: 1];
+  :Do not save the record[cite: 1];
 endif
 
+|System|
 stop
 @enduml
