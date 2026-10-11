@@ -1,73 +1,93 @@
 @startuml
-title Activity Diagram: UC-01 Manage Account
+title Activity Diagram: UC-01 Manage Account (Single End Point)
 
+|Customer|
 start
+:Choose "Create Account" or "Sign In" on Home Page;
 
-:Open Smart Web Ordering System;
-:Choose Create Account or Sign In;
-
-if (Create Account?) then (Yes)
-  :Display Registration Form;
-  :Enter name, email, and password;
+if (Choose action?) then (Create Account)
+  :Enter required information\n(name, email, password);
   :Submit registration form;
-  
-  if (Input & Email valid?) then (Yes)
-    :Create account with default role;
+
+  |System|
+  :Display Registration Form;
+  :Perform Validate Credentials\n(check format & uniqueness);
+
+  if (Email unique & input valid?) then (Yes)
+    :Create new account record with\ndefault "Customer" role;
+    :Authenticate user & start session;
+    :Redirect to Customer Home Page;
   else (No)
-    :Display error & request correction;
-    stop
+    if (Email already in use?) then (Yes)
+      :Notify email is in use &\nsuggest logging in;
+    else (No)
+      :Highlight invalid/incomplete\nfields & request correction;
+    endif
   endif
 
-else (No)
-  :Display Sign In Form;
-  :Enter credentials;
+else (Sign In)
+  |Customer|
+  :Enter credentials\n(email/username & password);
   :Submit Sign In form;
-  
+
+  |System|
+  :Display Sign In Form;
+  :Perform Validate Credentials\n(compare against records);
+
   if (Credentials valid?) then (Yes)
     :Authenticate user & start session;
+    if (User role?) then (Customer)
+      :Redirect to Customer Home Page;
+    else (Staff / Admin)
+      |Staff/Admin|
+      :Access assigned role permissions;
+      
+      |System|
+      :Redirect to Admin Panel Dashboard;
+    endif
   else (No)
-    :Display error / offer password reset;
-    stop
+    :Display error message &\noffer password reset option;
   endif
 endif
 
-' Check authorization and route by role
-if (User authenticated?) then (Yes)
-  if (User role?) then (Customer)
-    :Redirect to Customer Home Page;
-  else (Staff / Admin)
-    :Apply assigned role permissions;
-    :Redirect to Admin Panel Dashboard;
-  endif
-else (No)
-  :Return to Account Form;
-  stop
-endif
+|Customer|
+' Post-authentication actions
+if (Perform User Action?) then (Edit Profile)
+  :Navigate to "My Profile" / "Account Settings";
 
-' Main User Actions
-if (User Action?) then (Edit Profile)
-  :Retrieve current account details;
-  :Edit account information;
+  |System|
+  :Retrieve & display current account\ndetails in editable form;
+
+  |Customer|
+  :Edit profile details\n(e.g., address, contact number);
   :Submit changes;
-  
+
+  |System|
   if (Updated details valid?) then (Yes)
-    :Save details & display confirmation;
+    :Save updated information to database;
+    :Display confirmation message;
   else (No)
-    :Highlight errors & request correction;
+    :Highlight affected fields &\nprompt for correction;
   endif
 
 else (Log Out)
+  |Customer|
+  :Select Log Out;
+
+  |System|
   :End user session;
   :Redirect to Home Page;
 endif
 
+|System|
 ' Session Timeout Check
-if (Session timed out?) then (Yes)
+if (Session timed out due to inactivity?) then (Yes)
   :Automatically log out user;
-  :Redirect to Sign In Page;
+  :Redirect to Log In Page;
 else (No)
   :Continue session;
 endif
 
+|Customer|
 stop
 @enduml
