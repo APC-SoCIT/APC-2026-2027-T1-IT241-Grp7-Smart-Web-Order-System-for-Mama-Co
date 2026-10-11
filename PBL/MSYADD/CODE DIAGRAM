@@ -1,99 +1,135 @@
 @startuml
 title Cake Ordering System - Full Code/Class Diagram
 
-' Note
-note "Integrates AI System for inquiry replies\nand generative cake design recommendations." as NoteAI
+skinparam classAttributeIconSize 0
+skinparam shadowing false
+set separator none
+skinparam packageStyle rectangle
+hide empty members
 
-' Package 1: Account Management (Use Case 1)
-package "Account Module" {
-    class AccountController {
-        +manageAccount()
-    }
-    class Account {
-        -id: int
-        -name: String
-        -role: String
-    }
-    AccountController --> Account
+package "1. Manage Account" {
+  class AccountController <<UC 1>> {
+    + manageAccount()
+  }
+  class Account {
+    - id: int
+    - name: String
+    - role: String
+  }
 }
 
-' Package 2: Inquiry Management (Use Case 2)
-package "Inquiry Module" {
-    class InquiryController {
-        +manageInquiry()
-        +getAIReply()
-    }
-    class Inquiry {
-        -id: int
-        -message: String
-    }
-    InquiryController --> Inquiry
+package "2. Manage Inquiry" {
+  class InquiryController <<UC 2>> {
+    + manageInquiry()
+  }
+  class ChatbotController <<UC 2>> {
+    + startChat()
+    + sendMessage()
+    + getAIReply()
+    + escalateToInquiry()
+  }
+  class Inquiry {
+    - id: int
+    - message: String
+  }
 }
 
-' Package 3: Product & Cake Design (Use Cases 3 & 4)
-package "Product & Design Module" {
-    class ProductController {
-        +manageProducts()
-        +manageCakeDesign()
-        +getAIDesign()
-    }
-    class Product {
-        -id: int
-        -name: String
-        -price: double
-    }
-    class CakeDesign {
-        -id: int
-        -design_details: String
-    }
-    ProductController --> Product
-    ProductController --> CakeDesign
-    Product "1" --> "*" CakeDesign
+package "3. Manage Products" {
+  class ProductController <<UC 3>> {
+    + manageProducts()
+  }
+  class Product {
+    - id: int
+    - name: String
+    - price: double
+  }
 }
 
-' Package 4: Order & Payment Processing (Use Cases 3.1 & 3.1.1)
-package "Order & Payment Module" {
-    class OrderController {
-        +manageOrder()
-        +processPayment()
-    }
-    class Order {
-        -id: int
-        -total_amount: double
-    }
-    class Payment {
-        -id: int
-        -status: String
-    }
-    OrderController --> Order
-    OrderController --> Payment
-    Order "1" --> "1" Payment
+package "3.1 Manage Stocks" {
+  class StockController <<UC 3.1>> {
+    + manageStocks()
+  }
+  class Stock {
+    - id: int
+    - quantity: int
+  }
 }
 
-' Package 5: Report Management (Use Case 5)
-package "Report Module" {
-    class ReportController {
-        +manageReports()
-    }
-    class Report {
-        -id: int
-        -data: String
-    }
-    ReportController --> Report
+package "3.2 Manage Order" {
+  class OrderController <<UC 3.2>> {
+    + manageOrder()
+  }
+  class Order {
+    - id: int
+    - total_amount: double
+  }
 }
 
-' External AI System Integration
+package "3.2.1 Process Payment" {
+  class PaymentController <<UC 3.2.1>> {
+    + processPayment()
+  }
+  class Payment {
+    - id: int
+    - status: String
+  }
+}
+
+package "4. Manage Cake Design" {
+  class DesignController <<UC 4>> {
+    + manageCakeDesign()
+    + generateDesign()
+    + approveDesign()
+    + denyDesign()
+  }
+  class CakeDesign {
+    - id: int
+    - design_details: String
+  }
+}
+
+package "5. Manage Reports" {
+  class ReportController <<UC 5>> {
+    + manageReports()
+  }
+  class Report {
+    - id: int
+    - data: String
+  }
+}
+
 class AISystem <<external>> {
-    +getSuggestions(prompt: String): String
+  + getSuggestions(prompt: String): String
 }
 
-' AI System Dependencies
-InquiryController ..> AISystem : requests AI replies
-ProductController ..> AISystem : requests design recommendations
+' ---- Controllers to entities ----
+AccountController --> Account
+InquiryController --> Inquiry
+ProductController --> Product
+StockController --> Stock
+OrderController --> Order
+PaymentController --> Payment
+DesignController --> CakeDesign
+ReportController --> Report
+ChatbotController ..> Inquiry : escalates
 
-' Domain Entity Associations across modules
+' ---- Entity relationships ----
 Account "1" --> "*" Inquiry : submits
 Account "1" --> "*" Order : places
 Order "1" --> "*" Product : contains
+Order "1" --> "1" Payment
+Product "1" --> "1" Stock : has
+Product "1" --> "*" CakeDesign
+
+' ---- Use Case relationships (include / extend) ----
+StockController ..> ProductController : <<extend>>
+StockController ..> OrderController : <<include>>
+OrderController ..> ProductController : <<extend>>
+OrderController ..> DesignController : <<extend>>
+OrderController ..> PaymentController : <<include>>
+
+' ---- AI System (Manage Inquiry and Manage Cake Design) ----
+ChatbotController ..> AISystem : requests AI replies
+DesignController ..> AISystem : requests design recommendations
 
 @enduml
