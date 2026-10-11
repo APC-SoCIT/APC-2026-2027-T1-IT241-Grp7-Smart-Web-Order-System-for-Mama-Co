@@ -1,68 +1,86 @@
 @startuml
+skinparam defaultTextAlignment left
 title Activity Diagram: UC-05 Manage Cake Design
 
 |Customer|
 start
-:Select "Design" from the navigation bar\nand open Cake Designer page;
-:Enter design preferences\n(text, flavor, size, colors, occasion, etc.);
-:Submit design request and wait for preview;
+label design_start
+:Select "Design" from navigation bar;
+:Input design preferences\n(text, flavor, size, colors, occasion);
+:Submit design request;
 
 |AI System|
-:Receive input and check that\nrequired parameters are complete;
-
-if (Input complete & parameters valid?) then (Yes)
-  :Generate visual preview images\nof the custom cake;
-  :Display generated preview(s) to customer;
-
-  |Customer|
-  :Review generated cake design preview(s);
-
-  if (Customer action?) then (Ask Question via Chatbot)
-    |Customer|
-    :Use AI Chatbot to ask clarifying question\nabout a design option or term;
-
-    |AI System|
-    :Minimize/close chatbot window\nand keep customer on design page;
-
-  else if (Request Changes / Adjustments)
-    |Customer|
-    :Request design adjustments\n(e.g., color, decorations, size/tier);
-
-    |AI System|
-    :Regenerate updated preview(s);
-    :Display updated preview(s) to customer;
-
-  else (Save & Order Design)
-    |Customer|
-    :Select and order the final preferred design\n("Add to Cart" / "Order This Design");
-
+:Receive design preferences;
+if (Required parameters complete?) then (Yes)
+  if (Valid inputs & available ingredients/themes?) then (Yes)
+    :Generate visual preview image(s)\nusing generative-AI model;
+  else (No / Unavailable)
     |System|
-    :Notify Staff/Admin that a new\ncustom design is ready for review;
-
-    |Staff/Admin|
-    :Review saved design against ingredient\navailability and preparation feasibility;
-
-    |System|
-    if (Design feasible / approved?) then (Yes)
-      :Update design status to "Approved";
-      :Attach finalized design to new order\n(Manage Order);
-    else (No - Declined)
-      :Update design status to\n"Declined - Design Not Possible";
-      :Send notification to customer with notes\non why design cannot be made;
-      
-      |Customer|
-      :Prompt to submit alternative or\nsimplified design request;
-    endif
+    :Prompt for clarification or\nsuggest available alternatives;
+    detach
   endif
-
-else (No - Incomplete / Unavailable)
-  |AI System|
-  :Prompt for clarification or suggest\navailable alternatives;
-
-  |Customer|
-  :Correct input or select alternative;
+else (No / Incomplete)
+  |System|
+  :Prompt for missing required parameters;
+  detach
 endif
 
 |System|
-stop
+if (AI Generation Successful?) then (Yes)
+  :Display generated preview(s) to Customer;
+else (No / Failure)
+  :Notify Customer & offer to retry or\nconnect with staff for manual consultation;
+  detach
+endif
+
+|Customer|
+repeat
+  :Review AI-generated cake design preview(s);
+  
+  if (User Action?) then (Ask Question)
+    :Use AI Chatbot to ask clarifying question;
+    |System|
+    :Perform Interact with AI Chatbot;
+    :Minimize/close chatbot window & keep\nCustomer on current design page;
+    |Customer|
+  else if (Request Adjustments) then (Request Changes)
+    :Request design adjustments\n(color, decorations, size/tier);
+    |AI System|
+    :Regenerate updated preview(s)\nbased on requested changes;
+    |System|
+    :Display updated preview(s);
+    |Customer|
+  else (Proceed)
+    :Select preferred design;
+    break
+  endif
+repeat while (Customer wants to refine design?)
+
+:Submit finalized design for review;
+
+|System|
+:Order/Save finalized design;
+:Notify Staff/Admin that custom design\nis ready for feasibility review;
+
+|Staff/Admin|
+:Review saved design against ingredient\navailability and preparation feasibility;
+
+if (Feasibility Check?) then (Approved)
+  |System|
+  :Update design status to "Approved";
+  :Send notification to Customer;
+  ->
+  |Customer|
+  :Select "Add to Cart" / "Order This Design";
+  ->
+  |System|
+  :Perform Manage Order use case\n(attach theme, size, flavor, price details);
+  stop
+else (Declined)
+  |System|
+  :Update status to "Declined - Design Not Possible";
+  :Send notification to Customer with explanation\nand prompt to submit alternative design;
+  detach
+endif
+
 @enduml
