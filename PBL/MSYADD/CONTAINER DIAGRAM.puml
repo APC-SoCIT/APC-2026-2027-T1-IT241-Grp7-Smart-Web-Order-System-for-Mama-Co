@@ -1,5 +1,5 @@
 @startuml
-!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+!include <C4/C4_Container>
 
 LAYOUT_TOP_DOWN()
 SHOW_LEGEND()
@@ -16,12 +16,8 @@ together {
 ' System Boundary
 System_Boundary(smart_ordering_system, "Smart Web Ordering System") {
 
-    ' Front-End Containers
-    together {
-        Container(customer_web_app, "Customer Web App", "React / Next.js", "Web interface for browsing, custom cake designing, ordering, and chat.")
-        Container(staff_portal, "Staff Portal", "React / Next.js", "Portal for order production tracking, POS, and daily stock management.")
-        Container(admin_portal, "Admin Portal", "React / Next.js", "Dashboard for system config, store settings, user accounts, and analytics.")
-    }
+    ' Front-End Container (single web domain for all roles)
+    Container(web_app, "Web Application", "React / Next.js", "Web interface for browsing, custom cake designing, ordering, and chat. Also used for order production tracking, POS, daily stock management, system config, store settings, user accounts, and analytics.")
 
     ' Core Backend Container
     Container(backend_api, "Backend API", "Nest.js / Node.js", "Handles business logic, AI integrations, POS, product stock, and order processing.")
@@ -36,18 +32,16 @@ System_Boundary(smart_ordering_system, "Smart Web Ordering System") {
 ' External Systems
 together {
     System_Ext(payment_gateway, "Payment Gateway", "e.g., GCash, Maya")
-    System_Ext(openai_api, "OpenAI API", "DALL-E & Chatbot Engine")
+    System_Ext(ai_system, "AI System (OpenAI API)", "DALL-E & Chatbot Engine")
 }
 
 ' Actor to Frontend Interactions
-Rel_Down(customer, customer_web_app, "Uses and submits orders", "HTTPS")
-Rel_Down(staff, staff_portal, "Manages orders and stock", "HTTPS")
-Rel_Down(admin, admin_portal, "Configures settings and views reports", "HTTPS")
+Rel_Down(customer, web_app, "Uses and submits orders", "HTTPS")
+Rel_Down(staff, web_app, "Manages orders and stock", "HTTPS")
+Rel_Down(admin, web_app, "Configures settings and views reports", "HTTPS")
 
 ' Frontend to Backend Interactions
-Rel_Down(customer_web_app, backend_api, "Makes API calls (orders, design prompts)", "HTTPS / WebSocket")
-Rel_Down(staff_portal, backend_api, "Makes API calls (stock, order updates)", "HTTPS / WebSocket")
-Rel_Down(admin_portal, backend_api, "Makes API calls (users, system config)", "HTTPS")
+Rel_Down(web_app, backend_api, "Makes API calls (orders, design prompts, stock, order updates, users, system config)", "HTTPS / WebSocket")
 
 ' Backend to Storage Interactions
 Rel_Down(backend_api, database, "Reads and writes data", "SQL / Prisma ORM")
@@ -55,6 +49,6 @@ Rel_Down(backend_api, object_storage, "Uploads and retrieves image files", "HTTP
 
 ' Backend to External Systems Interactions
 Rel_Down(backend_api, payment_gateway, "Processes payment transactions", "HTTPS / REST API")
-Rel_Down(backend_api, openai_api, "Generates cake prompts & chats", "HTTPS / REST API")
+Rel_Down(backend_api, ai_system, "Generates cake prompts & chats", "HTTPS / REST API")
 
 @enduml
