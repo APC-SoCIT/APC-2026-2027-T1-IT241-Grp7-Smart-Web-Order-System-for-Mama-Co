@@ -1,67 +1,70 @@
 @startuml
+skinparam defaultTextAlignment left
 title Activity Diagram: UC-06 Manage Order
 
 |Customer|
 start
-:Select product(s) from catalog & add to cart\n(optionally attaching custom cake design);
+:[Step 1.0] Select product(s) from catalog & add to cart\n(optionally attaching custom cake design);
 
 |System|
-:Update and display Shopping Cart contents\nand running total;
-:Perform stock check to confirm all items\nand ingredients are in stock;
+:[Step 1.1] Update and display Shopping Cart contents\nand running total;
+:[Step 1.2] Perform stock check to confirm all items\nand ingredients are in stock;
 
 if (All items/ingredients available?) then (Yes)
   |Customer|
-  :Proceed to Checkout Page, enter delivery details,\ncontact info, and payment method;
-  :Confirm order details and submit order;
+  :[Step 2.0] Proceed to Checkout Page, enter delivery details,\ncontact info, and payment method;
+  :[Step 2.0] Confirm order details and submit order;
 
   |System|
-  :Create order record with status "Pending"\nand forward to Order History Page / POS portal;
-  :Perform Process Payment use case\n(e.g., GCash, Maya, COD);
+  :[Step 2.1] Create order record with status "Pending"\nand forward to Order History Page / POS portal;
+  :[Step 2.2] Perform Process Payment use case\n(e.g., GCash, Maya, COD);
 
   if (Payment successful?) then (Yes)
-    :Notify Staff/Admin of new order;
+    :[Step 3.0] Notify Staff/Admin of new order;
 
     |Staff/Admin|
-    :Open Order History Page from Dashboard,\nreview new order, and click "Accept" or "Reject";
+    :[Step 3.0] Open Order History Page from Dashboard,\nreview new order, and click "Accept" or "Reject";
 
     if (Accept order?) then (Yes)
       |System|
-      :Update order status to "Confirmed";
-      :Notify customer;
+      :[Step 3.1] Update order status to "Confirmed";
+      :[Step 3.1] Notify customer;
 
       |Staff/Admin|
-      :Update order status as prepared\n("In Preparation", "Ready");
-      :Mark order as "Picked Up" / "Delivered"\n(Delivery Driver role);
+      :[Step 3.2] Update order status as prepared\n("In Preparation", "Ready");
+      :[Step 3.2] Mark order as "Picked Up" / "Delivered"\n(Delivery Driver role);
 
       |System|
-      :Reflect real-time status update on customer's\norder-tracking page & timestamp delivery;
+      :[Step 3.3] Reflect real-time status update on customer's\norder-tracking page & timestamp delivery;
 
       |Customer|
-      :Receive order and view completed status;
-
+      :[Step 4.0] Receive order and view completed status;
+      |System|
+      stop
     else (No - Rejected)
       |System|
-      :Update order status to "Rejected";
-      :Notify customer of rejection;
-      :Perform Manage Inventory to release reserved stock;
+      :[Exc 3.0.1] Update order status to "Rejected";
+      :[Exc 3.0.1] Notify customer of rejection;
+      :[Exc 3.0.1] Perform Manage Inventory to release reserved stock;
+      detach
     endif
 
   else (No - Payment Failed)
     |System|
-    :Notify customer payment failed;
+    :[Exc 2.2.1] Notify customer payment failed;
     
     |Customer|
-    :Choose to retry with same/different method\nor cancel order;
+    :[Step 2.0] Choose to retry with same/different method\nor cancel order;
+    detach
   endif
 
 else (No - Unavailable Items)
   |System|
-  :Flag unavailable item(s) and notify customer\nwith substitute or cancellation options;
+  :[Exc 1.2.1] Flag unavailable item(s) and notify customer\nwith substitute or cancellation options;
 
   |Customer|
-  :Choose substitute or cancel order;
+  :[Step 1.0] Choose substitute or cancel order;
+  detach
 endif
 
-|System|
-stop
 @enduml
