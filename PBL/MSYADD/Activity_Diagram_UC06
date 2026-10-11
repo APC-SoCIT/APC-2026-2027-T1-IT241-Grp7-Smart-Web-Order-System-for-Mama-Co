@@ -1,73 +1,67 @@
 @startuml
-skinparam Monochrome true
-skinparam Shadowing false
+title Activity Diagram: UC-06 Manage Order
 
 |Customer|
 start
-:Select product(s) from catalog & add to cart;
-if (Custom cake design attached?) then (Yes)
-  :Attach saved cake design to cart item;
-else (No)
-  :Continue with standard selection;
-endif
+:Select product(s) from catalog & add to cart\n(optionally attaching custom cake design);
 
-|AI System|
-:Update cart contents & running total;
-:Check availability of items & ingredients;
+|System|
+:Update and display Shopping Cart contents\nand running total;
+:Perform stock check to confirm all items\nand ingredients are in stock;
 
-if (All items available?) then (Yes)
+if (All items/ingredients available?) then (Yes)
   |Customer|
-  :Proceed to Checkout Page;
-  :Enter delivery details & payment method;
+  :Proceed to Checkout Page, enter delivery details,\ncontact info, and payment method;
   :Confirm order details and submit order;
 
-  |AI System|
-  :Create order record (Status: "Pending");
-  :Perform payment processing;
+  |System|
+  :Create order record with status "Pending"\nand forward to Order History Page / POS portal;
+  :Perform Process Payment use case\n(e.g., GCash, Maya, COD);
 
   if (Payment successful?) then (Yes)
-    :Forward order to Order History Page / POS portal;
-    :Notify Staff & Admin of new order;
+    :Notify Staff/Admin of new order;
 
-    |Staff|
-    :Review new order in dashboard;
+    |Staff/Admin|
+    :Open Order History Page from Dashboard,\nreview new order, and click "Accept" or "Reject";
+
     if (Accept order?) then (Yes)
+      |System|
       :Update order status to "Confirmed";
-      :Prepare order (Kitchen tasks);
-      :Update order status (In Preparation / Ready);
-      :Mark order as Handed Over / Delivered;
-      
-      |AI System|
-      :Update customer order-tracking status;
-      :Send tracking notifications to Customer;
+      :Notify customer;
+
+      |Staff/Admin|
+      :Update order status as prepared\n("In Preparation", "Ready");
+      :Mark order as "Picked Up" / "Delivered"\n(Delivery Driver role);
+
+      |System|
+      :Reflect real-time status update on customer's\norder-tracking page & timestamp delivery;
 
       |Customer|
-      :Receive order & view completed status;
-      stop
-    else (No)
-      |AI System|
+      :Receive order and view completed status;
+
+    else (No - Rejected)
+      |System|
       :Update order status to "Rejected";
-      :Notify Customer of rejection;
-      :Release reserved stock;
-      stop
+      :Notify customer of rejection;
+      :Perform Manage Inventory to release reserved stock;
     endif
 
-  else (No)
-    |AI System|
-    :Notify Customer payment failed;
+  else (No - Payment Failed)
+    |System|
+    :Notify customer payment failed;
+    
     |Customer|
-    :Choose to retry or cancel order;
-    stop
+    :Choose to retry with same/different method\nor cancel order;
   endif
 
-else (No)
-  |AI System|
-  :Flag unavailable item(s);
-  :Suggest substitute options or cancellation;
+else (No - Unavailable Items)
+  |System|
+  :Flag unavailable item(s) and notify customer\nwith substitute or cancellation options;
+
   |Customer|
   :Choose substitute or cancel order;
-  stop
 endif
 
-
+|System|
+stop
 @enduml
