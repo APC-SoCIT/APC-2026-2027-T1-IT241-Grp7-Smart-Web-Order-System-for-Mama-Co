@@ -1,6 +1,8 @@
 @startuml
 title Activity Diagram: UC-02 Manage Inquiry
 
+skinparam linetype ortho
+
 |Customer|
 start
 :Select "Inquiries" / "Contact Us" on website\n(or AI Chatbot conversation escalates);
@@ -8,54 +10,55 @@ start
 :Submit inquiry;
 
 |System|
-:Validate that all required fields are completed[cite: 1];
+:Validate that all required fields are completed;
 
 if (All required fields valid?) then (Yes)
-  :Create new inquiry record with status "Open"\nand assign a reference number[cite: 1];
-  :Display confirmation message with reference number[cite: 1];
-  :Add inquiry to Staff/Admin dashboard queue[cite: 1];
+  :Create new inquiry record with status "Open"\nand assign a reference number;
+  :Display confirmation message with reference number;
+  :Add inquiry to Staff/Admin dashboard queue;
 
   |Staff/Admin|
-  :Open inquiry from dashboard and review details[cite: 1];
+  :Open inquiry from dashboard and review details;
 
   |System|
-  :Display inquiry details and related order/account history[cite: 1];
+  :Display inquiry details and related order/account history;
 
   |Staff/Admin|
-  :Draft and send reply to customer[cite: 1];
+  :Draft and send reply to customer;
 
   |System|
-  :Deliver reply via email and\nupdate inquiry status to "Answered"[cite: 1];
+  :Deliver reply via email and\nupdate inquiry status to "Answered";
 
   |Customer|
-  :Read reply[cite: 1];
+  :Read reply;
 
   if (Customer responds again or needs further help?) then (Yes)
-    :Send follow-up response[cite: 1];
+    :Send follow-up response;
     
     |Staff/Admin|
-    :Review follow-up and draft another reply[cite: 1];
+    :Review follow-up and draft another reply;
     
     |System|
-    :Update inquiry status to "Answered"[cite: 1];
+    :Update inquiry status to "Answered";
     
     |Customer|
-    :Read updated response[cite: 1];
+    :Read updated response;
   else (No)
-    |System|
-    if (No further response within set period or Staff/Admin closes it?) then (Yes)
-      :Update inquiry status to "Closed"[cite: 1];
-    else (No)
-      :Keep inquiry active[cite: 1];
-    endif
+  endif
+
+  |System|
+  if (No further response within set period or Staff/Admin closes it?) then (Yes)
+    :Update inquiry status to "Closed";
+  else (No)
+    :Keep inquiry active;
   endif
 
 else (No)
   |System|
-  :Highlight invalid/missing fields and\nprevent submission until corrected[cite: 1];
+  :Highlight invalid/missing fields and\nprevent submission until corrected;
   
   |Customer|
-  :Correct details and resubmit[cite: 1];
+  :Correct details and resubmit;
 endif
 
 |System|
