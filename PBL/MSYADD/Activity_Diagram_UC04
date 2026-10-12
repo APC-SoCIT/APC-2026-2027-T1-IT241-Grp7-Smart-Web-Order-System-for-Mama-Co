@@ -3,49 +3,49 @@ title Activity Diagram: UC-04 Manage Stocks
 
 |Staff/Admin|
 start
-:[Step 1.0] Select "Manage Stocks" from Admin Panel Dashboard;
+:Select "Manage Stocks" from Admin Panel Dashboard;
 
 |System|
-:[Step 1.1] Retrieve and display current stock levels, low-stock alerts, and item logs;
+:Retrieve and display current stock levels, low-stock alerts, and item logs;
 
 |Staff/Admin|
-:[Step 2.0] Review current stock levels for products and raw ingredients;
-:[Step 3.0] Input new stock shipments, adjust quantities manually, or update low-stock thresholds;
-:[Step 4.0] Save the stocks updates;
+:Review current stock levels for products and raw ingredients;
+:Input new stock shipments, adjust quantities manually, or update low-stock thresholds;
+:Save the stocks updates;
 
 |System|
-:[Step 4.1] Validate inputs;
+:Validate inputs;
 if (Inputs valid and non-negative?) then (Yes)
-    :[Step 4.1] Record the updated stock quantities in the database;
-    :[Step 4.1] Refresh the stocks view and display a confirmation message;
+    :Record the updated stock quantities in the database;
+    :Refresh the stocks view and display a confirmation message;
     if (Quantity below set threshold?) then (Yes)
-        :[Step 3.3] Flag items as "Out of Stock" or trigger low-stock notifications;
+        :Flag items as "Out of Stock" or trigger low-stock notifications;
     else (No)
     endif
 else (No)
-    :[Exc 4.1.1] Highlight the invalid field, display an error message, and prevent saving until corrected;
+    :Highlight the invalid field, display an error message, and prevent saving until corrected;
 endif
 
 |System|
 if (Order Event or Sync Occurs?) then (Order Placement)
-    :[Step 3.1] Automatically check stock availability during checkout process;
+    :Automatically check stock availability during checkout process;
     if (Sufficient stock?) then (Yes)
         :Proceed with order;
     else (No)
-        :[Exc 2.1.1] Flag the order item and notify customer with substitute or cancellation options;
+        :Flag the order item and notify customer with substitute or cancellation options;
     endif
 else
     if (Order Event or Sync Occurs?) then (Order Confirmation)
-        :[Step 3.2] Automatically deduct reserved quantities from stocks;
+        :Automatically deduct reserved quantities from stocks;
         if (Quantity drops below threshold?) then (Yes)
-            :[Step 3.3] Trigger low-stock notifications or flag items as "Out of Stock";
+            :Trigger low-stock notifications or flag items as "Out of Stock";
         else (No)
         endif
     else
         if (Order Event or Sync Occurs?) then (Order Cancellation)
-            :[Step 3.2] Automatically release reserved stock back into inventory;
+            :Automatically release reserved stock back into inventory;
         else (Third-Party Sync Failure)
-            :[Exc 4.1.2] Log the error and alert Staff/Admin to manually reconcile the stock count;
+            :Log the error and alert Staff/Admin to manually reconcile the stock count;
         endif
     endif
 endif
