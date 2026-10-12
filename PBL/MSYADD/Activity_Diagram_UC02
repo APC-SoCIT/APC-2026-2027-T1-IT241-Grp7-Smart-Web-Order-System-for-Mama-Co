@@ -62,5 +62,3 @@ endif
 |System|
 stop
 @enduml
-|System|
-:Validate that all required fields are completed;
