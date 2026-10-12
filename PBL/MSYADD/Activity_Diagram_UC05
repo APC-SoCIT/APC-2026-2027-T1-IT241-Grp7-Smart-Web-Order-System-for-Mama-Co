@@ -1,83 +1,83 @@
 @startuml
-skinparam defaultTextAlignment left
+
 title Activity Diagram: UC-05 Manage Cake Design
 
 |Customer|
 start
 label design_start
-:[Step 1.0] Select "Design" from navigation bar;
-:[Step 1.0] Input design preferences\n(text, flavor, size, colors, occasion);
-:[Step 2.0] Submit design request;
+:Select "Design" from navigation bar;
+:Input design preferences\n(text, flavor, size, colors, occasion);
+:Submit design request;
 
 |AI System|
-:[Step 1.1] Receive design preferences;
+:Receive design preferences;
 if (Required parameters complete?) then (Yes)
   if (Valid inputs & available ingredients/themes?) then (Yes)
-    :[Step 2.1] Generate visual preview image(s)\nusing generative-AI model;
+    :Generate visual preview image(s)\nusing generative-AI model;
   else (No / Unavailable)
     |System|
-    :[Exc 1.1.1] Prompt for clarification or\nsuggest available alternatives;
+    :Prompt for clarification or\nsuggest available alternatives;
     detach
   endif
 else (No / Incomplete)
   |System|
-  :[Exc 1.1.1] Prompt for missing required parameters;
+  :Prompt for missing required parameters;
   detach
 endif
 
 |System|
 if (AI Generation Successful?) then (Yes)
-  :[Step 2.2] Display generated preview(s) to Customer;
+  :Display generated preview(s) to Customer;
 else (No / Failure)
-  :[Exc 2.1.1] Notify Customer & offer to retry or\nconnect with staff for manual consultation;
+  :Notify Customer & offer to retry or\nconnect with staff for manual consultation;
   detach
 endif
 
 |Customer|
 repeat
-  :[Step 3.1] Review AI-generated cake design preview(s);
+  :Review AI-generated cake design preview(s);
   
   if (User Action?) then (Ask Question)
-    :[Step 4.0] Use AI Chatbot to ask clarifying question;
+    :Use AI Chatbot to ask clarifying question;
     |System|
-    :[Step 4.0] Perform Interact with AI Chatbot;
-    :[Step 4.1] Minimize/close chatbot window & keep\nCustomer on current design page;
+    :Perform Interact with AI Chatbot;
+    :Minimize/close chatbot window & keep\nCustomer on current design page;
     |Customer|
   elseif (Request Adjustments) then (Request Changes)
-    :[Step 5.0] Request design adjustments\n(color, decorations, size/tier);
+    :Request design adjustments\n(color, decorations, size/tier);
     |AI System|
-    :[Step 5.1] Regenerate updated preview(s)\nbased on requested changes;
+    :Regenerate updated preview(s)\nbased on requested changes;
     |System|
-    :[Step 5.2] Display updated preview(s);
+    :Display updated preview(s);
     |Customer|
   else (Proceed)
-    :[Step 6.0] Select preferred design;
+    :Select preferred design;
     break
   endif
 repeat while (Customer wants to refine design?)
 
-:[Step 6.1] Submit finalized design for review;
+:Submit finalized design for review;
 
 |System|
-:[Step 6.1] Order/Save finalized design;
-:[Step 6.2] Notify Staff/Admin that custom design\nis ready for feasibility review;
+:Order/Save finalized design;
+:Notify Staff/Admin that custom design\nis ready for feasibility review;
 
 |Staff/Admin|
-:[Step 7.0] Review saved design against ingredient\navailability and preparation feasibility;
+:Review saved design against ingredient\navailability and preparation feasibility;
 
 if (Feasibility Check?) then (Approved)
   |System|
-  :[Step 7.1] Update design status to "Approved";
-  :[Step 7.1] Send notification to Customer;
+  :Update design status to "Approved";
+  :Send notification to Customer;
   |Customer|
-  :[Step 8.0] Select "Add to Cart" / "Order This Design";
+  :Select "Add to Cart" / "Order This Design";
   |System|
-  :[Step 8.1] Perform Manage Order use case\n(attach theme, size, flavor, price details);
+  :Perform Manage Order use case\n(attach theme, size, flavor, price details);
   stop
 else (Declined)
   |System|
-  :[Exc 7.1.1] Update status to "Declined - Design Not Possible";
-  :[Exc 7.1.1] Send notification to Customer with explanation\nand prompt to submit alternative design;
+  :Update status to "Declined - Design Not Possible";
+  :Send notification to Customer with explanation\nand prompt to submit alternative design;
   detach
 endif
 
