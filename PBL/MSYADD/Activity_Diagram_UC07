@@ -4,38 +4,38 @@ title Activity Diagram: UC-07 Manage Reports
 
 |Admin|
 start
-:[Step 1.0] Log in and navigate to Sales Reports Page\nfrom Admin Panel Dashboard;
+:Log in and navigate to Sales Reports Page\nfrom Admin Panel Dashboard;
 
 |System|
-:[Step 1.1] Authenticate user's access rights\nto reporting features;
+:Authenticate user's access rights\nto reporting features;
 if (Access authorized?) then (Yes)
   |Admin|
-  :[Step 2.0] Select the report type and date range/filters\n(e.g., sales by platform, best-selling designs, inventory usage);
+  :Select the report type and date range/filters\n(e.g., sales by platform, best-selling designs, inventory usage);
 
   |System|
-  :[Step 3.0] Compile and aggregate relevant order,\npayment, and inquiry data for selected criteria;
+  :Compile and aggregate relevant order,\npayment, and inquiry data for selected criteria;
   if (Sufficient data exists for filters?) then (Yes)
-    :[Step 3.1] Display analytics dashboard with visualized data\n(graphs, tables, summary figures);
-    :[Step 3.2] Automatically flag and alert Admin\nwhen order volume exceeds normal threshold;
+    :Display analytics dashboard with visualized data\n(graphs, tables, summary figures);
+    :Automatically flag and alert Admin\nwhen order volume exceeds normal threshold;
 
     |Admin|
-    :[Step 4.0] Review generated statistics and charts\non the Sales Reports Page;
+    :Review generated statistics and charts\non the Sales Reports Page;
     if (Export or Print requested?) then (Yes)
-      :[Step 4.1] Select "Export" or "Print";
+      :Select "Export" or "Print";
     else (No)
-      :[Step 4.2] Finish review without exporting;
+      :Finish review without exporting;
     endif
 
     |System|
-    :[Step 4.3] Compile data into a downloadable file\n(e.g., PDF, Excel) or send to printer;
-    :[Step 4.4] Provide file for download or send to printer;
+    :Compile data into a downloadable file\n(e.g., PDF, Excel) or send to printer;
+    :Provide file for download or send to printer;
     stop
   else (No - Insufficient Data)
-    :[Exc 3.0.1] Display "No data available" message;
+    :Display "No data available" message;
     detach
   endif
 else (No - Access Denied)
-  :[Exc 1.1.1] Display permissions error and deny dashboard access;
+  :Display permissions error and deny dashboard access;
   detach
 endif
 
