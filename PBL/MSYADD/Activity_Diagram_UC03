@@ -1,62 +1,51 @@
 @startuml
+
 title Activity Diagram: UC-03 Manage Products
 
 |Customer|
 start
-:[Step 1.0] Customer selects "Products"\non the Home Page;
+:Customer selects "Products"\non the Home Page;
 
 |System|
-:[Step 1.1] Retrieve and display the\ncurrent product catalog;
+:Retrieve and display the\ncurrent product catalog;
 
 |Customer|
-:[Step 2.0] Select a specific product\nto view its full details;
+:Select a specific product\nto view its full details;
 
 |System|
-:[Step 2.1] Display product details (price breakdown,\nsize options, ingredients, allergen info);
+:Display product details\n(price breakdown, size options,\ningredients, allergen info);
 
-if (Customer wants to customize the selected product?) then (Yes)
-  :Start Manage Cake Design use case;
-else (No)
-  :Continue browsing the catalog;
-endif
+|Customer|
+:Continue browsing the catalog\nor return to product list;
 
 |Staff/Admin|
-:[Step 3.0] Select "Manage Products"\nfrom the Admin Panel Dashboard;
+:Select "Manage Products"\nfrom the Admin Panel Dashboard;
 
 |System|
-:[Step 3.1] Display the Manage Products page\nwith all current products;
+:Display the Manage Products page\nwith all current products;
 
 |Staff/Admin|
-:[Step 4.0] Choose Add New Product, or select\nan existing product to edit or remove;
+:Choose Add New Product, or select\nan existing product to edit or remove;
+:Enter or update the product details\nand click Save or confirm Remove;
 
 |System|
-:[Step 4.1] Display blank form for add,\nor pre-filled form for edit;
-
-|Staff/Admin|
-:[Step 5.0] Enter or update the product details\nand click Save or confirm Remove;
-
-|System|
-:[Step 5.1] Validate required fields and formatting;
-
-if (Information valid and complete?) then (Yes)
-  if (Product update conflicts with an active order?) then (Yes)
-    :[Exc 5.2.1] Warn Staff/Admin\nbefore saving change;
-    if (Staff/Admin confirms save?) then (Yes)
-      :[Step 5.2] Save the product record;
+:Validate required fields\nand formatting;
+if (Information valid\nand complete?) then (Yes)
+  if (Product update conflicts\nwith an active order?) then (Yes)
+    :Warn Staff/Admin\nbefore saving change;
+    if (Staff/Admin\nconfirms save?) then (Yes)
+      :Save the product record;
     else (No)
       :Cancel the update;
     endif
   else (No)
-    :[Step 5.2] Save the product record to the database;
+    :Save the product record to the database;
   endif
-  
-  :[Step 5.2] Refresh the live catalog;
-  :[Step 5.3] Display confirmation message;
+  :Refresh the live catalog;
+  :Display confirmation message;
 else (No)
-  :[Exc 5.1.1] Prompt for missing or\ncorrected fields;
-  :[Exc 5.1.1] Do not save the record;
+  :Prompt for missing or\ncorrected fields;
+  :Do not save the record;
 endif
-
-|System|
 stop
 @enduml
