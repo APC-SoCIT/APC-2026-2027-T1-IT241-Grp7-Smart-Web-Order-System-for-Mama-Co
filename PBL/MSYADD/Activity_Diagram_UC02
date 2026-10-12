@@ -5,44 +5,31 @@ title Activity Diagram: UC-02 Manage Inquiry
 start
 :Select "Inquiries" / "Contact Us" on website\n(or AI Chatbot conversation escalates);
 :Fill out inquiry form\n(name, contact details, email, message);
+:Submit inquiry;
 
-repeat
-  :Submit inquiry;
+|System|
+:Validate that all required fields are completed;
+
+if (All required fields valid?) then (Yes)
+  :Create new inquiry record with status "Open"\nand assign a reference number;
+  :Display confirmation message with reference number;
+  :Add inquiry to Staff/Admin dashboard queue;
+
+  |Staff/Admin|
+  :Open inquiry from dashboard and review details;
 
   |System|
-  :Validate that all required fields are completed;
+  :Display inquiry details and related order/account history;
 
-  if (All required fields valid?) then (Yes)
-    break
-  else (No)
-    :Highlight invalid/missing fields and\nprevent submission until corrected;
-    
-    |Customer|
-    :Correct details and resubmit;
-  endif
-repeat while (Resubmitted?)
+  |Staff/Admin|
+  :Draft and send reply to customer;
 
-|System|
-:Create new inquiry record with status "Open"\nand assign a reference number;
-:Display confirmation message with reference number;
-:Add inquiry to Staff/Admin dashboard queue;
+  |System|
+  :Deliver reply via email and\nupdate inquiry status to "Answered";
 
-|Staff/Admin|
-:Open inquiry from dashboard and review details;
+  |Customer|
+  :Read reply;
 
-|System|
-:Display inquiry details and related order/account history;
-
-|Staff/Admin|
-:Draft and send reply to customer;
-
-|System|
-:Deliver reply via email and\nupdate inquiry status to "Answered";
-
-|Customer|
-:Read reply;
-
-repeat
   if (Customer responds again or needs further help?) then (Yes)
     :Send follow-up response;
     
@@ -60,11 +47,20 @@ repeat
   |System|
   if (No further response within set period or Staff/Admin closes it?) then (Yes)
     :Update inquiry status to "Closed";
-    break
   else (No)
     :Keep inquiry active;
   endif
-repeat while (Inquiry Active?)
 
+else (No)
+  |System|
+  :Highlight invalid/missing fields and\nprevent submission until corrected;
+  
+  |Customer|
+  :Correct details and resubmit;
+endif
+
+|System|
 stop
 @enduml
+|System|
+:Validate that all required fields are completed;
