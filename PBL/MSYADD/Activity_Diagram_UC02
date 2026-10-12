@@ -5,94 +5,44 @@ title Activity Diagram: UC-02 Manage Inquiry
 start
 :Select "Inquiries" / "Contact Us" on website\n(or AI Chatbot conversation escalates);
 :Fill out inquiry form\n(name, contact details, email, message);
-:Submit inquiry;
-@startuml
-title Activity Diagram: UC-02 Manage Inquiry
 
-|Customer|
-start
-:[Step 1.0] Select "Inquiries" / "Contact Us" on website\n(or AI Chatbot conversation escalates);
-:[Step 1.0] Fill out inquiry form\n(name, contact details, email, message);
-:[Step 2.0] Submit inquiry;
-
-|System|
-:[Step 1.1] Validate that all required fields are completed;
-
-if (All required fields valid?) then (Yes)
-  :[Step 1.2] Create new inquiry record with status "Open"\nand assign a reference number;
-  :[Step 2.1] Display confirmation message with reference number;
-  :[Step 2.2] Add inquiry to Staff/Admin dashboard queue;
-
-  |Staff/Admin|
-  :[Step 3.0] Open inquiry from dashboard and review details;
+repeat
+  :Submit inquiry;
 
   |System|
-  :[Step 3.1] Display inquiry details and related order/account history;
+  :Validate that all required fields are completed;
 
-  |Staff/Admin|
-  :[Step 4.0] Draft and send reply to customer;
-
-  |System|
-  :[Step 4.1] Deliver reply via email and\nupdate inquiry status to "Answered";
-
-  |Customer|
-  :[Step 5.0] Read reply;
-
-  if (Customer responds again or needs further help?) then (Yes)
-    :[Step 5.0] Send follow-up response;
-    
-    |Staff/Admin|
-    :[Step 4.0] Review follow-up and draft another reply;
-    
-    |System|
-    :[Step 4.1] Update inquiry status to "Answered";
+  if (All required fields valid?) then (Yes)
+    break
+  else (No)
+    :Highlight invalid/missing fields and\nprevent submission until corrected;
     
     |Customer|
-    :[Step 5.0] Read updated response;
-  else (No)
+    :Correct details and resubmit;
   endif
-
-  |System|
-  if (No further response within set period or Staff/Admin closes it?) then (Yes)
-    :[Step 5.1] Update inquiry status to "Closed";
-  else (No)
-    :Keep inquiry active;
-  endif
-
-else (No)
-  |System|
-  :[Exc 1.1.1] Highlight invalid/missing fields and\nprevent submission until corrected;
-  
-  |Customer|
-  :[Step 1.0] Correct details and resubmit;
-endif
+repeat while (Resubmitted?)
 
 |System|
-stop
-@enduml
+:Create new inquiry record with status "Open"\nand assign a reference number;
+:Display confirmation message with reference number;
+:Add inquiry to Staff/Admin dashboard queue;
+
+|Staff/Admin|
+:Open inquiry from dashboard and review details;
+
 |System|
-:Validate that all required fields are completed;
+:Display inquiry details and related order/account history;
 
-if (All required fields valid?) then (Yes)
-  :Create new inquiry record with status "Open"\nand assign a reference number;
-  :Display confirmation message with reference number;
-  :Add inquiry to Staff/Admin dashboard queue;
+|Staff/Admin|
+:Draft and send reply to customer;
 
-  |Staff/Admin|
-  :Open inquiry from dashboard and review details;
+|System|
+:Deliver reply via email and\nupdate inquiry status to "Answered";
 
-  |System|
-  :Display inquiry details and related order/account history;
+|Customer|
+:Read reply;
 
-  |Staff/Admin|
-  :Draft and send reply to customer;
-
-  |System|
-  :Deliver reply via email and\nupdate inquiry status to "Answered";
-
-  |Customer|
-  :Read reply;
-
+repeat
   if (Customer responds again or needs further help?) then (Yes)
     :Send follow-up response;
     
@@ -110,18 +60,11 @@ if (All required fields valid?) then (Yes)
   |System|
   if (No further response within set period or Staff/Admin closes it?) then (Yes)
     :Update inquiry status to "Closed";
+    break
   else (No)
     :Keep inquiry active;
   endif
+repeat while (Inquiry Active?)
 
-else (No)
-  |System|
-  :Highlight invalid/missing fields and\nprevent submission until corrected;
-  
-  |Customer|
-  :Correct details and resubmit;
-endif
-
-|System|
 stop
 @enduml
