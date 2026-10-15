@@ -3,87 +3,87 @@ title Activity Diagram: UC-01 Manage Account
 
 |Customer|
 start
-:[Step 1.0] Choose "Create Account" or "Sign In"\non Home Page;
+:Choose "Create Account" or "Sign In"\non Home Page;
 
 if (Choose action?) then (Create Account)
-  :[Step 2.0] Enter required information\n(name, email, password);
-  :[Step 3.0] Submit registration form;
+  :Enter required information\n(name, email, password);
+  :Submit registration form;
 
   |System|
-  :[Step 1.1] Display Registration Form;
-  :[Step 2.1/2.2] Perform Validate Credentials\n(check format & uniqueness);
+  :Display Registration Form;
+  :Perform Validate Credentials\n(check format & uniqueness);
 
   if (Email unique & input valid?) then (Yes)
-    :[Step 3.1] Create new account record with\ndefault "Customer" role;
-    :[Step 3.1] Authenticate user & start session;
-    :[Step 3.2] Redirect to Customer Home Page;
+    :Create new account record with\ndefault "Customer" role;
+    :Authenticate user & start session;
+    :Redirect to Customer Home Page;
   else (No)
     if (Email already in use?) then (Yes)
-      :[Exc 2.2.1] Notify email is in use &\nsuggest logging in;
+      :Notify email is in use &\nsuggest logging in;
     else (No)
-      :[Exc 2.1.1] Highlight invalid/incomplete\nfields & request correction;
+      :Highlight invalid/incomplete\nfields & request correction;
     endif
   endif
 
 else (Sign In)
   |Customer|
-  :[Step 2.0] Enter credentials\n(email/username & password);
-  :[Step 3.0] Submit Sign In form;
+  :Enter credentials\n(email/username & password);
+  :Submit Sign In form;
 
   |System|
-  :[Step 1.1] Display Sign In Form;
-  :[Step 2.2] Perform Validate Credentials\n(compare against records);
+  :Display Sign In Form;
+  :Perform Validate Credentials\n(compare against records);
 
   if (Credentials valid?) then (Yes)
-    :[Step 3.1] Authenticate user & start session;
+    :Authenticate user & start session;
     if (User role?) then (Customer)
-      :[Step 3.2] Redirect to Customer Home Page;
+      :Redirect to Customer Home Page;
     else (Staff / Admin)
       |Staff/Admin|
-      :[Step 3.2] Access assigned role permissions;
+      :Access assigned role permissions;
       
       |System|
-      :[Step 3.2] Redirect to Admin Panel Dashboard;
+      :Redirect to Admin Panel Dashboard;
     endif
   else (No)
-    :[Exc 2.1.2] Display error message &\noffer password reset option;
+    :Display error message &\noffer password reset option;
   endif
 endif
 
 |Customer|
 ' Post-authentication actions
 if (Perform User Action?) then (Edit Profile)
-  :[Step 4.0] Navigate to "My Profile" / "Account Settings";
+  :Navigate to "My Profile" / "Account Settings";
 
   |System|
-  :[Step 4.1] Retrieve & display current account\ndetails in editable form;
+  :Retrieve & display current account\ndetails in editable form;
 
   |Customer|
-  :[Step 4.0] Edit profile details\n(e.g., address, contact number);
-  :[Step 5.0] Submit changes;
+  :Edit profile details\n(e.g., address, contact number);
+  :Submit changes;
 
   |System|
   if (Updated details valid?) then (Yes)
-    :[Step 4.2] Save updated information to database;
-    :[Step 5.1] Display confirmation message;
+    :Save updated information to database;
+    :Display confirmation message;
   else (No)
-    :[Exc 2.1.1] Highlight affected fields &\nprompt for correction;
+    :Highlight affected fields &\nprompt for correction;
   endif
 
 else (Log Out)
   |Customer|
-  :[Step 5.0] Select Log Out;
+  :Select Log Out;
 
   |System|
-  :[Step 5.1] End user session;
-  :[Step 5.1] Redirect to Home Page;
+  :End user session;
+  :Redirect to Home Page;
 endif
 
 |System|
 ' Session Timeout Check
 if (Session timed out due to inactivity?) then (Yes)
-  :[Exc 5.1.1] Automatically log out user;
-  :[Exc 5.1.1] Redirect to Log In Page;
+  :Automatically log out user;
+  :Redirect to Log In Page;
 else (No)
   :Continue session;
 endif
